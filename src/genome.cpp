@@ -22,7 +22,22 @@ Genome::Genome(map<size_t, Gene> genes_) {
     id_to_layer = {};
     associate_id_to_layer();
     srand(getpid());
-    get_rand_seq(0, 10);
+    auto last_nodes = find_last_layer_nodes();
+    last_layer_node_id = last_nodes;
+}
+
+std::ostream& operator<<(std::ostream& os, std::vector<size_t> v) {
+    for (auto i: v)
+        cout << i << ", ";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const Genome& g) {
+    for (size_t i = 0; i < g.genes.size(); ++i) {
+        cout << g.genes.at(i) << endl;
+    }
+    cout << endl;
+    return os;
 }
 
 std::vector<size_t> Genome::find_layer0_nodes() const {
@@ -52,11 +67,24 @@ std::vector<size_t> Genome::find_layer0_nodes() const {
     return layer0_nodes;
 }
 
-std::ostream& operator<<(std::ostream& os, std::vector<size_t> v) {
-    for (auto i: v)
-        cout << i << ", ";
-    return os;
+set<size_t> Genome::find_last_layer_nodes() const {
+    set<size_t> result = {};
+    for (auto gene: genes) {
+        size_t receiver = gene.second.to_link;
+        bool not_a_sender = true;
+        for (auto comparison: genes) {
+            if (comparison.second.from_link == receiver) {
+                not_a_sender = false;
+                break;
+            }
+        }
+        if (not_a_sender)
+            result.insert(receiver);
+    }
+    return result;
 }
+
+
 
 void Genome::associate_id_to_layer() {
     std::vector<size_t> current_focus = find_layer0_nodes();
@@ -68,8 +96,6 @@ void Genome::associate_id_to_layer() {
     // Set the other nodes based on the starting positions found
     std::vector<size_t> next_focus = {};
     do {
-        cout << "current_focus: " << current_focus 
-             << " currrent_layer: " << current_layer << endl;
         current_layer++;
         for (auto node_id: current_focus) {
             for (auto gene: genes) {
@@ -98,7 +124,6 @@ void Genome::write_to_file(std::__cxx11::string filename) const {
     for (auto gene_id: activated_genes) {
         outfile << "\t\"" << genes.at(gene_id).from_link
                 << "\" -> " << genes.at(gene_id).to_link << endl;
-        cout << "writing " << genes.at(gene_id) << endl;
     }
     outfile << "}";
     outfile.close();
@@ -115,13 +140,13 @@ bool Genome::link_exists(link_t new_link) const {
     return false;
 }
 
-// TODO: when information about the layer will be avaiable,
-//       create the network so that is an acyclic graph
 void Genome::mutate_add_link() {
     link_t new_link = {0, 0};
     link_t invalid_link = {0, 0};
     for (auto start: get_rand_seq(0, node_counter)) {
         unsigned short start_layer = id_to_layer.at(start);
+        if (last_layer_node_id.find(start) != last_layer_node_id.end())
+            continue;
         for (auto i: id_to_layer) {
             if (i.second <= start_layer)
                 continue;
@@ -136,7 +161,6 @@ void Genome::mutate_add_link() {
     }
     if (new_link != invalid_link) {
         add_gene(new_link, get_rand_weight());
-        cout << new_link.first << " -> " << new_link.second << endl;
     }
 }
 
@@ -162,13 +186,6 @@ size_t Genome::add_gene(link_t link, double w, bool enabled) {
     return new_gene.id;
 }
 
-std::ostream& operator<<(std::ostream& os, const Genome& g) {
-    for (size_t i = 0; i < g.genes.size(); ++i) {
-        cout << g.genes.at(i) << endl;
-    }
-    cout << endl;
-    return os;
-}
 
 bool Genome::validate_genome() const {
     std::set<size_t> ids = {};
@@ -226,6 +243,5 @@ std::vector<size_t> Genome::get_rand_seq(size_t min, size_t max_exclusive) {
     for (size_t i=0; i<max_exclusive; i++) {
         std::swap(result[i], result[rand() % result.size()]);
     }
-    cout << result;
     return result;
 }
