@@ -8,6 +8,8 @@
 #include <fstream>
 #include <unistd.h>
 #include <set>
+#include <tuple>
+#include <iterator>
 #include "test.h"
 
 using std::cout;
@@ -15,6 +17,7 @@ using std::endl;
 using std::map;
 using std::set;
 using std::string;
+using std::vector;
 
 //
 // GENE
@@ -32,6 +35,7 @@ struct Gene {
          double weight_, bool enabled_=true) :
         id(id_), from_link(from), to_link(to), 
         weight(weight_), enabled(enabled_) { }
+    //Gene() : Gene(0, 0, 0, 0.0, true) {}
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Gene& g) {
@@ -70,22 +74,26 @@ private:
     map<size_t, unsigned short> id_to_layer;
     set<size_t> last_layer_node_id;
 
-    std::vector<size_t> find_layer0_nodes() const;
+    vector<size_t> find_layer0_nodes() const;
     set<size_t> find_last_layer_nodes() const;
     void associate_id_to_layer();
     double get_rand_weight(double scale=1.0) const;
     size_t add_gene(link_t link, double w=1.0, bool enabled=true);
+    size_t add_gene(Gene g);
     bool link_exists(link_t new_link) const;
-    std::vector<size_t> get_rand_seq(size_t min, size_t max_exclusive);
+    vector<size_t> get_rand_seq(size_t min, size_t max_exclusive);
+    Gene& cross_genes(Gene& lhs, Gene& rhs) const;
+
+
 
 public:
-    Genome(map<size_t, Gene> genes_);
+    Genome(vector<Gene> genes_);
     bool validate_genome() const;
-    //Genome crossover(Genome other) const;
     void write_to_file(std::string filename) const;
     friend std::ostream& operator<<(std::ostream& os, const Genome& g);
     void mutate_add_link();
     void mutate_add_node();
+    Genome crossover(Genome& other) const;
 };
 
 #endif // GENOME_H

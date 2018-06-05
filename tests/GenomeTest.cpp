@@ -15,33 +15,42 @@ void inequality() {
     assert(g1 != g2);
 }
 
+void bad_genome_constructor() {
+    Genome g = {
+        {
+            {0, 0, 1, -1},
+            {0, 0, 2,  1}
+        }
+    };
+
+}
 
 void validation() {
     Genome g = {
         {
-            {0, {0, 0, 1, -0.1}},
-            {1, {1, 1, 2, -0.1}},
-            {2, {2, 1, 3, -0.1}}
+            {0, 0, 1, -0.1},
+            {1, 1, 2, -0.1},
+            {2, 1, 3, -0.1}
         }
     };
 
     Genome g2 = {
         {
-            {1, {0, 0, 1, -0.1}}, // map index must be the same as gene id
-            {1, {1, 1, 2, -0.1}},
-            {2, {2, 1, 3, -0.1}}
+            {0, 0, 1, -0.1}, 
+            {1, 1, 2, -0.1},
+            {2, 1, 3, -0.1}
         }
     };
 
     assert(g.validate_genome());
-    assert(g2.validate_genome() == 0);
+    assert(g2.validate_genome());
 }
 
 void link_existence() {
     Genome possible_link = {
         {
-            {0, {0, 0, 1, -0.1}},
-            {1, {1, 0, 2, -0.1}}
+            {0, 0, 1, -0.1},
+            {1, 0, 2, -0.1}
         }
     };
     possible_link.mutate_add_link();
@@ -49,9 +58,9 @@ void link_existence() {
 
     Genome impossible_link = {
         {
-            {0, {0, 0, 1, -0.1}},
-            {1, {1, 0, 2, -0.1}},
-            {2, {2, 1, 2, -0.1}}
+            {0, 0, 1, -0.1},
+            {1, 0, 2, -0.1},
+            {2, 1, 2, -0.1}
         }
     };
     impossible_link.mutate_add_link();
@@ -61,7 +70,7 @@ void link_existence() {
 void gene_addition() {
     Genome g = {
         {
-            {0, {0, 0, 1, 0.1}} 
+            {0, 0, 1, 0.1} 
         }
     };
     size_t active_genes = g.activated_genes.size();
@@ -76,8 +85,8 @@ void gene_addition() {
 void node_mutation() {
     Genome g = {
         {
-            {0, {0, 0, 1, 0.1}},
-            {1, {1, 1, 2, 0.2}}
+            {0, 0, 1, 0.1},
+            {1, 1, 2, 0.2}
         }
     };
     size_t active_genes = g.activated_genes.size();
@@ -93,15 +102,15 @@ void node_mutation() {
 void gene_layers_association() {
     Genome g = {
         {
-            {0, {0, 0, 5, -0.1}},
-            {1, {1, 0, 3,  0.2}},
-            {2, {2, 5, 6, -0.4}},
-            {3, {3, 6, 4, -0.4}},
-            {4, {4, 4, 1, -0.4}},
-            {5, {5, 4, 2, -0.1}},
-            {6, {6, 4, 3, -0.4}},
-            {7, {7, 5, 7, -0.4}},
-            {8, {8, 7, 4, -0.4}},
+            {0, 0, 5, -0.1},
+            {1, 0, 3,  0.2},
+            {2, 5, 6, -0.4},
+            {3, 6, 4, -0.4},
+            {4, 4, 1, -0.4},
+            {5, 4, 2, -0.1},
+            {6, 4, 3, -0.4},
+            {7, 5, 7, -0.4},
+            {8, 7, 4, -0.4},
         }
     };
     assert(g.id_to_layer[0] == 0);
@@ -114,8 +123,20 @@ void gene_layers_association() {
     assert(g.id_to_layer[7] == 2);
 }
 
+void cross_genes_test() {
+    Gene g1 = {0, 0, 1, 1.0, true};
+    Gene g2 = {0, 0, 1, 1.0, false};
+    Genome g = {{}};
+    assert(g.cross_genes(g1, g2) == g2);
+}
+
 
 int main(int argc, char** argv) {
+    try {
+        bad_genome_constructor();
+        return 1;
+    } catch (const char* msg) {}
+
     try {
         equality();
         inequality();
@@ -124,7 +145,9 @@ int main(int argc, char** argv) {
         gene_addition();
         node_mutation();
         gene_layers_association();
-    } catch(std::exception e) {
+        cross_genes_test();
+    } catch(const char* e) {
+        std::cout << e << '\n';
         return 1;
     }
     return 0;
