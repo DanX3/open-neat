@@ -7,23 +7,25 @@ using std::cout;
 
 
 int main(int argc, char *argv[]) {
-    Gene g01 = {0, 0, 1, 1.0};
-    Gene g12 = {1, 1, 2, 1.0};
-    Gene g13 = {2, 1, 3, 1.0};
-    Gene g05 = {4, 0, 5, 1.0, false};
-    Gene g45 = {5, 4, 5, 1.0};
-    Gene g16 = {6, 1, 6, 1.0};
-    Gene g04 = {7, 0, 4, 1.0};
-    Genome g1 = {
+    Gene g1 = {1, 1, 4, 1.0, true};
+    Gene g2 = {2, 2, 4, 1.0, false};
+    Gene g3 = {3, 3, 4, 1.0, true};
+    Gene g4 = {4, 2, 5, 1.0, true};
+    Gene g5 = {5, 5, 4, 1.0, true};
+    Gene g6 = {6, 5, 6, 1.0, true};
+    Gene g7 = {7, 6, 4, 1.0, true};
+    Gene g8 = {8, 1, 5, 1.0, true};
+    Gene g9 = {9, 3, 5, 1.0, true};
+    Gene g10= {10, 1, 6, 1.0, true};
+    Genome G1 = {
         {
-            g01, g12, g13, g05, g04, g45
+            g1, g2, g3, g4, g5, g8
         }
     };
-    Gene g05_enabled = g05;
-    g05_enabled.enabled = true;
-    Genome g2 = {
+
+    Genome G2 = {
         {
-            g01, g16, g12, g05_enabled
+            g1, g2, g3, g4, {5, 5, 4, 1.0, false}, g6, g7, g9, g10
         }
     };
     cout << g1 << endl;
@@ -39,10 +41,22 @@ int main(int argc, char *argv[]) {
     }
     g.write_to_file("after.dot");
 #endif
-
-#if 1
-    Genome offspring = g1.crossover(g2);
-    offspring.write_to_file("offspring.dot");
+    G1.write_to_file("G1.dot");
+    G2.write_to_file("G2.dot");
+    Genome offspring = G1.crossover(G2);
+#if 0
+    offspring.mutate_add_node();
+    offspring.mutate_add_node();
+    offspring.mutate_add_node();
+    offspring.mutate_add_node();
+    offspring.mutate_add_node();
+    offspring.mutate_add_node();
+    for (int i=0; i<10; i++) {
+        if (i % 2 == 0) {
+            offspring.mutate_add_node();
+        }
+        offspring.mutate_add_link();
+    }
 #endif
 }
 

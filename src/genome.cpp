@@ -3,6 +3,7 @@
 
 Genome::Genome(std::vector<Gene> genes_) {
     genes = {};
+    nodes_id = {};
     for (auto gene: genes_) {
         auto out = genes.insert({gene.id, gene});
         if (not out.second) {
@@ -46,8 +47,8 @@ std::ostream& operator<<(std::ostream& os, const Genome& g) {
     return os;
 }
 
-std::vector<size_t> Genome::find_layer0_nodes() const {
-    std::vector<size_t> layer0_nodes = {};
+std::set<size_t> Genome::find_layer0_nodes() const {
+    set<size_t> layer0_nodes = {};
     for (auto first: genes) {
         bool valid = true;
         size_t first_start = first.second.from_link;
@@ -58,15 +59,7 @@ std::vector<size_t> Genome::find_layer0_nodes() const {
             }
         }
         if (valid) {
-            bool already_present = false;
-            for (auto i: layer0_nodes) {
-                if (i == first_start) {
-                    already_present = true;
-                    break;
-                }
-            }
-            if (not already_present)
-                layer0_nodes.push_back(first_start);
+            layer0_nodes.insert(first_start);
         } else
             break;
     }
@@ -93,14 +86,14 @@ set<size_t> Genome::find_last_layer_nodes() const {
 
 
 void Genome::associate_id_to_layer() {
-    std::vector<size_t> current_focus = find_layer0_nodes();
+    set<size_t> current_focus = find_layer0_nodes();
     id_to_layer.clear();
     for (auto node_id: current_focus)
         id_to_layer.insert({node_id, 0});
     int current_layer = 0;
 
     // Set the other nodes based on the starting positions found
-    std::vector<size_t> next_focus = {};
+    set<size_t> next_focus = {};
     do {
         current_layer++;
         for (auto node_id: current_focus) {
@@ -114,10 +107,16 @@ void Genome::associate_id_to_layer() {
                         id_to_layer.at(target) = current_layer;
                     }
                     // TODO: avoid double values in next_focus
-                    next_focus.push_back(target);
+                    next_focus.insert(target);
                 }
             }
         }
+        // Just print
+        write_to_file("dump");
+        for (auto i: next_focus)
+            cout << i << " - " ;
+        cout << endl;
+
         current_focus = next_focus;
         next_focus.clear();
     } while(not current_focus.empty());
@@ -153,19 +152,19 @@ bool Genome::link_exists(link_t new_link) const {
 void Genome::mutate_add_link() {
     link_t new_link = {0, 0};
     link_t invalid_link = {0, 0};
-    for (auto start: get_rand_seq(0, node_counter)) {
+    for (auto start: get_nodes_id_rand_seq()) {
         unsigned short start_layer = id_to_layer.at(start);
         if (last_layer_node_id.find(start) != last_layer_node_id.end())
             continue;
-        for (auto i: id_to_layer) {
-            if (i.second <= start_layer)
+        for (auto end: get_nodes_id_rand_seq()) {
+            if (id_to_layer[end] <= start_layer)
                 continue;
             
-            if (link_exists({start, i.first}))
+            if (link_exists({start, end}))
                 continue;
 
             new_link.first = start;
-            new_link.second = i.first;
+            new_link.second = end;
             break;
         }
     }
@@ -203,6 +202,8 @@ size_t Genome::add_gene(Gene new_gene) {
     genes.insert({new_gene.id, new_gene});
     if (new_gene.enabled)
         activated_genes.insert(new_gene.id);
+    nodes_id.insert(new_gene.from_link);
+    nodes_id.insert(new_gene.from_link);
     return new_gene.id;
 }
 
@@ -233,6 +234,16 @@ bool Genome::validate_genome() const {
                       << pair.second.to_link << endl;
             validated = false;
             break;
+        }
+
+        // Check if every link is to a higher layer node
+        for (auto pair: genes) {
+            size_t starting_layer = id_to_layer.at(pair.second.from_link);
+            size_t ending_layer = id_to_layer.at(pair.second.to_link);
+            if (ending_layer <= starting_layer) {
+                validated = false;
+                break;
+            }
         }
     }
 
@@ -324,6 +335,15 @@ Genome Genome::crossover(Genome& other) const {
             continue;
         }
     }
+    result.write_to_file("offspring.dot");
     cout << result;
+    return result;
+}
+
+vector<size_t> Genome::get_nodes_id_rand_seq() const {
+    vector<size_t> result = {nodes_id.begin(), nodes_id.end()};
+    for (size_t i=0; i<result.size(); i++) {
+        std::swap(result[i], result[rand() % result.size()]);
+    }
     return result;
 }

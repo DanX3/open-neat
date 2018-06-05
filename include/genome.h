@@ -73,8 +73,9 @@ private:
     set<size_t> activated_genes;
     map<size_t, unsigned short> id_to_layer;
     set<size_t> last_layer_node_id;
+    set<size_t> nodes_id;
 
-    vector<size_t> find_layer0_nodes() const;
+    set<size_t> find_layer0_nodes() const;
     set<size_t> find_last_layer_nodes() const;
     void associate_id_to_layer();
     double get_rand_weight(double scale=1.0) const;
@@ -83,7 +84,7 @@ private:
     bool link_exists(link_t new_link) const;
     vector<size_t> get_rand_seq(size_t min, size_t max_exclusive);
     Gene& cross_genes(Gene& lhs, Gene& rhs) const;
-
+    vector<size_t> get_nodes_id_rand_seq() const;
 
 
 public:
