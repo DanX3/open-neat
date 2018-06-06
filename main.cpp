@@ -43,7 +43,20 @@ int main(int argc, char *argv[]) {
 #endif
     G1.write_to_file("G1.dot");
     G2.write_to_file("G2.dot");
-    Genome offspring = G1.crossover(G2);
+    //Genome offspring = G1.crossover(G2);
+    auto G3 = G1;
+    for (int i=0; i<500; i++) {
+    G3.mutate_add_node();
+    G3.mutate_add_link();
+        cout << i << "\n";
+        //if (not G3.validate_genome()){
+            //std::cout << "Invalid genome" << '\n';
+            //G3.write_to_file("invalid_genome.dot");
+            //return 1;
+        //}
+    }
+    G3.write_to_file("monster.dot");
+    std::cout << "monster validated: " << G3.validate_genome() << '\n';
 #if 0
     offspring.mutate_add_node();
     offspring.mutate_add_node();

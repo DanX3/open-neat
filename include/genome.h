@@ -69,11 +69,16 @@ class Genome {
 private:
     size_t id_counter;    // The current maximum id assigned
     size_t node_counter;  // The current maximum node id assigned
+    bool node_counter_changed;
     map<size_t, Gene> genes;
     set<size_t> activated_genes;
     map<size_t, unsigned short> id_to_layer;
     set<size_t> last_layer_node_id;
-    set<size_t> nodes_id;
+    set<size_t> layer0_node_id;
+    set<size_t> nodes_id; // Genome node IDs are not sequential, needs tracking
+    map<size_t, set<size_t>> links;
+    vector<size_t> nodes_id_rand_seq_1;
+    vector<size_t> nodes_id_rand_seq_2;
 
     set<size_t> find_layer0_nodes() const;
     set<size_t> find_last_layer_nodes() const;
@@ -84,7 +89,10 @@ private:
     bool link_exists(link_t new_link) const;
     vector<size_t> get_rand_seq(size_t min, size_t max_exclusive);
     Gene& cross_genes(Gene& lhs, Gene& rhs) const;
-    vector<size_t> get_nodes_id_rand_seq() const;
+    void shuffle_nodes_id_rand_seq();
+    void print_links() const; //TODO: delete this
+    void insert_link(Gene& gene);
+    void remove_link(Gene& gene);
 
 
 public:

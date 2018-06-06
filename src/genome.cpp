@@ -1,9 +1,11 @@
 #include "genome.h"
 
-
 Genome::Genome(std::vector<Gene> genes_) {
     genes = {};
     nodes_id = {};
+    links = {};
+    nodes_id_rand_seq_1 = {};
+    nodes_id_rand_seq_2 = {};
     for (auto gene: genes_) {
         auto out = genes.insert({gene.id, gene});
         if (not out.second) {
@@ -15,6 +17,7 @@ Genome::Genome(std::vector<Gene> genes_) {
     for (auto gene: genes_) {
         if (gene.enabled) {
             activated_genes.insert(gene.id);
+            insert_link(gene);
         }
 
         // Set node_counter and id_counter 
@@ -27,6 +30,7 @@ Genome::Genome(std::vector<Gene> genes_) {
     }
 
     id_to_layer = {};
+    layer0_node_id = find_layer0_nodes();
     associate_id_to_layer();
     srand(getpid());
     auto last_nodes = find_last_layer_nodes();
@@ -86,7 +90,7 @@ set<size_t> Genome::find_last_layer_nodes() const {
 
 
 void Genome::associate_id_to_layer() {
-    set<size_t> current_focus = find_layer0_nodes();
+    set<size_t> current_focus = layer0_node_id;
     id_to_layer.clear();
     for (auto node_id: current_focus)
         id_to_layer.insert({node_id, 0});
@@ -97,25 +101,25 @@ void Genome::associate_id_to_layer() {
     do {
         current_layer++;
         for (auto node_id: current_focus) {
-            for (auto gene: genes) {
-                if (node_id == gene.second.from_link) {
-                    size_t target= gene.second.to_link;
-                    auto it = id_to_layer.find(target);
-                    if (it == id_to_layer.end()) { // if not in id_to_layer
-                        id_to_layer.insert({target, current_layer});
-                    } else {
-                        id_to_layer.at(target) = current_layer;
-                    }
-                    // TODO: avoid double values in next_focus
-                    next_focus.insert(target);
+            if (links.find(node_id) == links.end())
+                continue;
+            for (auto target: links.at(node_id)) {
+                auto it = id_to_layer.find(target);
+                if (it == id_to_layer.end()) { // if not in id_to_layer
+                    id_to_layer.insert({target, current_layer});
+                } else {
+                    id_to_layer.at(target) = current_layer;
                 }
+                next_focus.insert(target);
             }
         }
         // Just print
+#if 0
         write_to_file("dump");
         for (auto i: next_focus)
             cout << i << " - " ;
         cout << endl;
+#endif
 
         current_focus = next_focus;
         next_focus.clear();
@@ -127,22 +131,28 @@ void Genome::write_to_file(std::__cxx11::string filename) const {
     outfile.open(filename);
     outfile << "digraph NN {" << endl;
     for (auto gene_id: activated_genes) {
-        outfile << "\t\"" << genes.at(gene_id).from_link
-                << "\" -> " << genes.at(gene_id).to_link << endl;
+        outfile << "\t" << genes.at(gene_id).from_link << " -> " 
+                << genes.at(gene_id).to_link << endl;
     }
     outfile << "}";
     outfile.close();
 }
 
+/**
+ * Check if the link exists already or not. 
+ * WARNING
+ * Does not check the link validity, that is from a higher layer to a higher one
+ * (i.e. if a link starts from layer 3 and targets a node in layer 2). This is
+ * an easy checking that can be performed through id_to_layer data structure
+ *
+ */
 bool Genome::link_exists(link_t new_link) const {
-    link_t reverse_link = {new_link.second, new_link.first};
-    for (auto pair: genes) {
-        link_t gene_link = {pair.second.from_link, pair.second.to_link};
-        if ((gene_link == new_link) or (gene_link == reverse_link)) {
-            return true;
-        }
-    }
-    return false;
+    if (links.find(new_link.first) == links.end())
+        return false;
+    auto link = links.at(new_link.first);
+    if (link.find(new_link.second) == link.end())
+        return false;
+    return true;
 }
 
 /**
@@ -152,11 +162,12 @@ bool Genome::link_exists(link_t new_link) const {
 void Genome::mutate_add_link() {
     link_t new_link = {0, 0};
     link_t invalid_link = {0, 0};
-    for (auto start: get_nodes_id_rand_seq()) {
+    shuffle_nodes_id_rand_seq();
+    for (auto start: nodes_id_rand_seq_1) {
         unsigned short start_layer = id_to_layer.at(start);
         if (last_layer_node_id.find(start) != last_layer_node_id.end())
             continue;
-        for (auto end: get_nodes_id_rand_seq()) {
+        for (auto end: nodes_id_rand_seq_2) {
             if (id_to_layer[end] <= start_layer)
                 continue;
             
@@ -183,13 +194,14 @@ void Genome::mutate_add_node() {
     advance(it, rand() % activated_genes.size());
     Gene disabled_gene = genes.at(*it);
     genes.at(*it).enabled = false;
+    remove_link(disabled_gene);
     activated_genes.erase(it);
 
+    node_counter_changed = true;
     link_t link1(disabled_gene.from_link, ++node_counter);
     link_t link2 = {node_counter, disabled_gene.to_link};
     add_gene(link1, disabled_gene.weight);
     id_counter = add_gene(link2, 1.0);
-    associate_id_to_layer();
 }
 
 
@@ -200,10 +212,14 @@ size_t Genome::add_gene(link_t link, double w, bool enabled) {
 
 size_t Genome::add_gene(Gene new_gene) {
     genes.insert({new_gene.id, new_gene});
-    if (new_gene.enabled)
+    insert_link(new_gene);
+    if (new_gene.enabled) {
         activated_genes.insert(new_gene.id);
+
+    }
     nodes_id.insert(new_gene.from_link);
     nodes_id.insert(new_gene.from_link);
+    associate_id_to_layer();
     return new_gene.id;
 }
 
@@ -213,7 +229,6 @@ size_t Genome::add_gene(Gene new_gene) {
  */
 bool Genome::validate_genome() const {
     std::set<size_t> ids = {};
-    std::set<string> links = {};
     bool validated = true;
     for (auto pair: genes) {
         // Check if every id is unique
@@ -223,39 +238,45 @@ bool Genome::validate_genome() const {
             validated = false;
             break;
         }
+    }
 
-        // Check if every link is unique
-        string link = std::to_string(pair.second.from_link) + "-"
-                + std::to_string(pair.second.to_link);
-        auto result_link = links.insert(link);
-        if (! result_link.second) {
-            std::cerr << "Invalid genome: double link found: "
-                      << pair.second.from_link  << " -> "
-                      << pair.second.to_link << endl;
+    // Check if every link is unique
+    auto links_copy = links;
+    for (auto pair: genes) {
+        if (not pair.second.enabled)
+            continue;
+        Gene gene = pair.second;
+        links_copy.at(gene.from_link).erase(gene.to_link);
+    }
+    for (auto pair: links_copy) {
+        if (pair.second.size() != 0) {
             validated = false;
             break;
         }
+    }
 
-        // Check if every link is to a higher layer node
-        for (auto pair: genes) {
+    // Check if every link is to a higher layer node
+    for (auto pair: genes) {
+        try {
             size_t starting_layer = id_to_layer.at(pair.second.from_link);
             size_t ending_layer = id_to_layer.at(pair.second.to_link);
             if (ending_layer <= starting_layer) {
                 validated = false;
                 break;
             }
+        } catch (const char* msg) {
+            cout << "id_to_layer.size() = " << id_to_layer.size() << endl;
+            ids.clear();
+            links_copy.clear();
+            return false;
         }
     }
 
     ids.clear();
-    links.clear();
+    links_copy.clear();
     return validated;
 }
 
-
-//Genome Genome::crossover(Genome other) const {
-    
-//}
 
 double Genome::get_rand_weight(double scale) const {
     return ((double) rand() / (double)RAND_MAX) * 2.0 * scale - 1.0;
@@ -340,10 +361,45 @@ Genome Genome::crossover(Genome& other) const {
     return result;
 }
 
-vector<size_t> Genome::get_nodes_id_rand_seq() const {
-    vector<size_t> result = {nodes_id.begin(), nodes_id.end()};
-    for (size_t i=0; i<result.size(); i++) {
-        std::swap(result[i], result[rand() % result.size()]);
+void Genome::shuffle_nodes_id_rand_seq() {
+    if (node_counter_changed) {
+        nodes_id_rand_seq_1.clear();
+        nodes_id_rand_seq_2.clear();
+        for (size_t node_id: nodes_id) {
+            nodes_id_rand_seq_1.push_back(node_id);
+            nodes_id_rand_seq_2.push_back(node_id);
+        }
     }
-    return result;
+    const size_t size = nodes_id_rand_seq_1.size();
+    for (size_t i=0; i<nodes_id_rand_seq_1.size() / 2; i++) {
+        std::swap(nodes_id_rand_seq_1[i], nodes_id_rand_seq_1[rand() % size]);
+        std::swap(nodes_id_rand_seq_2[i], nodes_id_rand_seq_2[rand() % size]);
+    }
+}
+
+void Genome::print_links() const {
+    for (auto start: links) {
+        cout << start.first << " -> ";
+        for (auto end: start.second) {
+            cout << end << ", ";
+        }
+        cout << endl;
+    }
+}
+
+void Genome::insert_link(Gene& gene) {
+    if (not gene.enabled)
+        return;
+
+    auto out = links.find(gene.from_link);
+    if (out == links.end()) { // starting node still not present
+        links.insert({gene.from_link, {gene.to_link}});
+    } else {  // Starting node present but END is missing
+        out->second.insert(gene.to_link);
+    }
+}
+
+void Genome::remove_link(Gene& gene) {
+    auto out = links.find(gene.from_link);
+    out->second.erase(gene.to_link);
 }

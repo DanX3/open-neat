@@ -157,6 +157,41 @@ void cross_genes_test() {
     assert(g.cross_genes(g1, g2) == g2);
 }
 
+void crossover_test() {
+    Gene g1 = {1, 1, 4, 1.0, true};
+    Gene g2 = {2, 2, 4, 1.0, false};
+    Gene g3 = {3, 3, 4, 1.0, true};
+    Gene g4 = {4, 2, 5, 1.0, true};
+    Gene g5 = {5, 5, 4, 1.0, true};
+    Gene g6 = {6, 5, 6, 1.0, true};
+    Gene g7 = {7, 6, 4, 1.0, true};
+    Gene g8 = {8, 1, 5, 1.0, true};
+    Gene g9 = {9, 3, 5, 1.0, true};
+    Gene g10= {10, 1, 6, 1.0, true};
+    Genome G1 = {
+        {
+            g1, g2, g3, g4, g5, g8
+        }
+    };
+
+    Genome G2 = {
+        {
+            g1, g2, g3, g4, {5, 5, 4, 1.0, false}, g6, g7, g9, g10
+        }
+    };
+    for (int i=0; i<20; i++) {
+        if (i % 2 == 0)
+            G1.mutate_add_node();
+            if (i % 3 != 0)
+                G2.mutate_add_node();
+        G1.mutate_add_link();
+        if (i % 5 != 0)
+            G2.mutate_add_link();
+    }
+    Genome offspring = G1.crossover(G2);
+    assert(offspring.validate_genome());
+}
+
 
 int main(int argc, char** argv) {
     try {
@@ -173,7 +208,10 @@ int main(int argc, char** argv) {
         node_mutation();
         gene_layers_association();
         cross_genes_test();
-        heavy_mutation();
+        //for (int j=0; j<10; j++) {
+            heavy_mutation();
+            crossover_test();
+        //}
     } catch(const char* e) {
         std::cout << e << '\n';
         return 1;
