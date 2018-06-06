@@ -11,6 +11,7 @@
 #include <tuple>
 #include <iterator>
 #include "test.h"
+#include "id_generator.h"
 
 using std::cout;
 using std::endl;
@@ -67,9 +68,8 @@ typedef std::pair<size_t, size_t> link_t;
 
 class Genome {
 private:
-    size_t id_counter;    // The current maximum id assigned
-    size_t node_counter;  // The current maximum node id assigned
     bool node_counter_changed;
+    bool structure_changed;
     map<size_t, Gene> genes;
     set<size_t> activated_genes;
     map<size_t, unsigned short> id_to_layer;
@@ -79,6 +79,7 @@ private:
     map<size_t, set<size_t>> links;
     vector<size_t> nodes_id_rand_seq_1;
     vector<size_t> nodes_id_rand_seq_2;
+
 
     set<size_t> find_layer0_nodes() const;
     set<size_t> find_last_layer_nodes() const;

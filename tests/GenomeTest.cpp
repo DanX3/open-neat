@@ -76,8 +76,6 @@ void gene_addition() {
     size_t active_genes = g.activated_genes.size();
     size_t genes_count = g.genes.size();
     g.add_gene({0, 1}, 0.1);
-    assert(g.node_counter == 1);
-    assert(g.id_counter == 1);
     assert(active_genes == g.activated_genes.size() - 1);
     assert(genes_count == g.genes.size() - 1);
 }
@@ -93,14 +91,14 @@ void node_mutation() {
     size_t genes_count = g.genes.size();
     g.mutate_add_node();
 
-    assert(g.node_counter == 3);
-    assert(g.id_counter == 3);
     assert(active_genes == g.activated_genes.size() - 1);
     assert(genes_count == g.genes.size() - 2);
 
     for (int i=0; i<10; i++) {
         g.mutate_add_node();
     }
+
+    g.write_to_file("node_mutation.dot");
     assert(g.validate_genome());
 }
 
@@ -208,10 +206,10 @@ int main(int argc, char** argv) {
         node_mutation();
         gene_layers_association();
         cross_genes_test();
-        //for (int j=0; j<10; j++) {
+        for (int j=0; j<5; j++) {
             heavy_mutation();
             crossover_test();
-        //}
+        }
     } catch(const char* e) {
         std::cout << e << '\n';
         return 1;

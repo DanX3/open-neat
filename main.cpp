@@ -2,9 +2,6 @@
 #include <iostream>
 
 
-using std::cout;
-
-
 
 int main(int argc, char *argv[]) {
     Gene g1 = {1, 1, 4, 1.0, true};
@@ -28,10 +25,28 @@ int main(int argc, char *argv[]) {
             g1, g2, g3, g4, {5, 5, 4, 1.0, false}, g6, g7, g9, g10
         }
     };
-    cout << g1 << endl;
-    cout << g2 << endl;
-    //cout << g << std::endl;
+    for (int i=0; i<500; i++) {
+        cout << i << endl;
+        if (i % 2 == 0)
+            G1.mutate_add_node();
+            if (i % 3 != 0)
+                G2.mutate_add_node();
+        if (i % 2 != 0)
+            G1.mutate_add_link();
+        if (i % 5 != 0)
+            G2.mutate_add_link();
+    }
+    Genome offspring = G1.crossover(G2);
+    offspring.write_to_file("offspring.dot");
+
+    for (int i=0; i<250; i++) {
+        G1.mutate_add_node();
+        G1.mutate_add_link();
+        G1.mutate_add_link();
+    }
+    G1.write_to_file("monster.dot");
 #if 0
+    //cout << g << std::endl;
     g.write_to_file("before.dot");
     for (int i=0; i<40; i++) {
         if ((double)rand()/(double)RAND_MAX < 0.5)
@@ -40,12 +55,11 @@ int main(int argc, char *argv[]) {
         g.mutate_add_link();
     }
     g.write_to_file("after.dot");
-#endif
     G1.write_to_file("G1.dot");
     G2.write_to_file("G2.dot");
-    //Genome offspring = G1.crossover(G2);
-    auto G3 = G1;
-    for (int i=0; i<500; i++) {
+    Genome offspring = G1.crossover(G2);
+    auto G3 = offspring;
+    for (int i=0; i<50; i++) {
     G3.mutate_add_node();
     G3.mutate_add_link();
         cout << i << "\n";
@@ -57,7 +71,6 @@ int main(int argc, char *argv[]) {
     }
     G3.write_to_file("monster.dot");
     std::cout << "monster validated: " << G3.validate_genome() << '\n';
-#if 0
     offspring.mutate_add_node();
     offspring.mutate_add_node();
     offspring.mutate_add_node();
