@@ -12,6 +12,8 @@
 #include <iterator>
 #include "test.h"
 #include "id_generator.h"
+#include "node_id_generator.h"
+#include <cassert>
 
 using std::cout;
 using std::endl;
@@ -69,7 +71,6 @@ typedef std::pair<size_t, size_t> link_t;
 class Genome {
 private:
     bool node_counter_changed;
-    bool structure_changed;
     map<size_t, Gene> genes;
     set<size_t> activated_genes;
     map<size_t, unsigned short> id_to_layer;
@@ -87,7 +88,7 @@ private:
     double get_rand_weight(double scale=1.0) const;
     size_t add_gene(link_t link, double w=1.0, bool enabled=true);
     size_t add_gene(Gene g);
-    bool link_exists(link_t new_link) const;
+    bool link_exists(size_t start, size_t end) const;
     vector<size_t> get_rand_seq(size_t min, size_t max_exclusive);
     Gene& cross_genes(Gene& lhs, Gene& rhs) const;
     void shuffle_nodes_id_rand_seq();
@@ -104,6 +105,7 @@ public:
     void mutate_add_link();
     void mutate_add_node();
     Genome crossover(Genome& other) const;
+    size_t get_extension() const;
 };
 
 #endif // GENOME_H

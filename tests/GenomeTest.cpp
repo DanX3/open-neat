@@ -190,6 +190,28 @@ void crossover_test() {
     assert(offspring.validate_genome());
 }
 
+void extension_test() {
+    Genome g = {
+        {
+            {0, 0, 5, -0.1},
+            {1, 0, 3,  0.2},
+            {2, 5, 6, -0.4},
+            {3, 6, 4, -0.4},
+            {4, 4, 1, -0.4},
+            {5, 4, 2, -0.1},
+            {6, 4, 3, -0.4},
+            {7, 5, 7, -0.4},
+            {8, 7, 4, -0.4},
+        }
+    };
+    for (int i=0; i<150; i++) {
+        g.mutate_add_node();
+        g.mutate_add_link();
+        g.mutate_add_link();
+    }
+    assert(g.get_extension() > 300);
+}
+
 
 int main(int argc, char** argv) {
     try {
@@ -206,6 +228,7 @@ int main(int argc, char** argv) {
         node_mutation();
         gene_layers_association();
         cross_genes_test();
+        extension_test();
         for (int j=0; j<5; j++) {
             heavy_mutation();
             crossover_test();

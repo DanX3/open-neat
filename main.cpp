@@ -25,7 +25,12 @@ int main(int argc, char *argv[]) {
             g1, g2, g3, g4, {5, 5, 4, 1.0, false}, g6, g7, g9, g10
         }
     };
-    for (int i=0; i<500; i++) {
+    G2.mutate_add_node();
+    G2.mutate_add_node();
+    G2.mutate_add_link();
+    G2.mutate_add_link();
+    G2.mutate_add_link();
+    for (int i=0; i<200; i++) {
         cout << i << endl;
         if (i % 2 == 0)
             G1.mutate_add_node();
@@ -45,6 +50,7 @@ int main(int argc, char *argv[]) {
         G1.mutate_add_link();
     }
     G1.write_to_file("monster.dot");
+    std::cout << "Monster extension: " << G1.get_extension() << '\n';
 #if 0
     //cout << g << std::endl;
     g.write_to_file("before.dot");

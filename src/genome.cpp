@@ -7,7 +7,6 @@ Genome::Genome(std::vector<Gene> genes_) {
     nodes_id_rand_seq_1 = {};
     nodes_id_rand_seq_2 = {};
     node_counter_changed = true;
-    structure_changed = true;
     for (auto gene: genes_) {
         auto out = genes.insert({gene.id, gene});
         if (not out.second) {
@@ -20,6 +19,10 @@ Genome::Genome(std::vector<Gene> genes_) {
         while (IDGenerator::instance().check_id() <= pair.second.id) {
             IDGenerator::instance().get_id();
         }
+        while (NodeIDGen::instance().check_id() <= pair.second.from_link 
+                or NodeIDGen::instance().check_id() <= pair.second.to_link) {
+            NodeIDGen::instance().get_id();
+        }
     }
 
     for (auto gene: genes_) {
@@ -27,6 +30,8 @@ Genome::Genome(std::vector<Gene> genes_) {
             activated_genes.insert(gene.id);
             insert_link(gene);
         }
+        nodes_id.insert(gene.from_link);
+        nodes_id.insert(gene.to_link);
     }
 
     id_to_layer = {};
@@ -90,10 +95,6 @@ set<size_t> Genome::find_last_layer_nodes() const {
 
 
 void Genome::associate_id_to_layer() {
-    //if (not structure_changed)
-        //return;
-
-    structure_changed = false;
     set<size_t> current_focus = layer0_node_id;
     id_to_layer.clear();
     for (auto node_id: current_focus)
@@ -119,6 +120,9 @@ void Genome::associate_id_to_layer() {
         current_focus = next_focus;
         next_focus.clear();
     } while(not current_focus.empty());
+    if (nodes_id.size() == id_to_layer.size()) {
+        write_to_file("wrong.dot");
+    }
 }
 
 void Genome::write_to_file(std::__cxx11::string filename) const {
@@ -141,11 +145,11 @@ void Genome::write_to_file(std::__cxx11::string filename) const {
  * an easy checking that can be performed through id_to_layer data structure
  *
  */
-bool Genome::link_exists(link_t new_link) const {
-    if (links.find(new_link.first) == links.end())
+bool Genome::link_exists(size_t start, size_t end) const {
+    if (links.find(start) == links.end())
         return false;
-    auto link = links.at(new_link.first);
-    if (link.find(new_link.second) == link.end())
+    auto link = links.at(start);
+    if (link.find(end) == link.end())
         return false;
     return true;
 }
@@ -166,7 +170,7 @@ void Genome::mutate_add_link() {
             if (id_to_layer[end] <= start_layer)
                 continue;
             
-            if (link_exists({start, end}))
+            if (link_exists(start, end))
                 continue;
 
             new_link.first = start;
@@ -194,30 +198,31 @@ void Genome::mutate_add_node() {
     activated_genes.erase(it);
 
     // Creation phase
-    size_t new_node_id = IDGenerator::instance().get_id();
+    size_t new_node_id = NodeIDGen::instance().get_id();
+    node_counter_changed = true;
     nodes_id.insert(new_node_id);
     link_t link1 = {disabled_gene.from_link, new_node_id};
     link_t link2 = {new_node_id, disabled_gene.to_link};
-    structure_changed = true;
-    add_gene(link1, disabled_gene.weight);
-    structure_changed = true;
-    add_gene(link2, 1.0);
+    add_gene(link1, disabled_gene.weight, true);
+    add_gene(link2, 1.0, true);
 }
 
 
 size_t Genome::add_gene(link_t link, double w, bool enabled) {
     Gene new_gene = {IDGenerator::instance().get_id(), 
-        link.first, link.second, w, true};
+        link.first, link.second, w, enabled};
     return add_gene(new_gene);
 }
 
 size_t Genome::add_gene(Gene new_gene) {
     genes.insert({new_gene.id, new_gene});
     insert_link(new_gene);
+    nodes_id.insert(new_gene.from_link);
+    nodes_id.insert(new_gene.to_link);
     if (new_gene.enabled) {
         activated_genes.insert(new_gene.id);
-
     }
+    write_to_file("test");
     associate_id_to_layer();
     return new_gene.id;
 }
@@ -260,6 +265,7 @@ bool Genome::validate_genome() const {
     for (auto pair: genes) {
         try {
             size_t starting_layer = id_to_layer.at(pair.second.from_link);
+            cout << "nodes_id:";
             size_t ending_layer = id_to_layer.at(pair.second.to_link);
             if (ending_layer <= starting_layer) {
                 validated = false;
@@ -401,4 +407,22 @@ void Genome::insert_link(Gene& gene) {
 void Genome::remove_link(Gene& gene) {
     auto out = links.find(gene.from_link);
     out->second.erase(gene.to_link);
+}
+
+
+size_t Genome::get_extension() const {
+    unsigned short depth = 0;
+    unsigned short width = 0;
+    map<unsigned short, unsigned short> nodes_per_layer = {};
+    for (auto pair: id_to_layer) {
+        depth = std::max(depth, pair.second);
+        if (nodes_per_layer.find(pair.second) == nodes_per_layer.end())
+            nodes_per_layer.insert({pair.second, 0});
+        else
+            nodes_per_layer.at(pair.second)++;
+    }
+    for (auto pair: nodes_per_layer) {
+        width = std::max(width, pair.second);
+    }
+    return depth * width;
 }
