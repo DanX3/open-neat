@@ -1,4 +1,4 @@
-    #ifndef NODE_H
+#ifndef NODE_H
 #define NODE_H
 
 #include <string>
@@ -6,8 +6,12 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 using std::vector;
+using std::string;
+
+struct Link;
 
 enum class ACTIVATION_FUNCTION {
     SIGMOID,
@@ -15,20 +19,25 @@ enum class ACTIVATION_FUNCTION {
     TANH
 };
 
-class Node
-{
-private:
-    double w;
-    double b;
 
+class Node {
+private:
     double accumulator;
-    vector<Node> linked_nodes;
+    vector<Link> links;
 public:
-    std::function<double(double)> activation;
+    //std::function<double(double)> activation;
     Node();
-    Node(ACTIVATION_FUNCTION f, double w, double b);
-    static double min(double a, double b);
-    static double max(double a, double b);
+    void receive_input(double input);
+    void send_input() const;
+    double get_accumulator() const;
+    void reset();
+    void link_to(Node* n, double weight);
+    //Node(ACTIVATION_FUNCTION f, double w, double b);
 };
 
-#endif // NODE_H
+struct Link {
+    Node* target;
+    double weight;
+};
+
+#endif

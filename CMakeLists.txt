@@ -5,4 +5,4 @@ add_executable(neat ${SOURCES} main.cpp)
 set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -g -DTEST=1 -pg")
 
 enable_testing()
-add_subdirectory(tests)
+add_subdirectory(test)
