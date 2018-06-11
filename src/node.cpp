@@ -17,8 +17,9 @@
 
 //}
 
-Node::Node() {
+Node::Node(size_t id_) {
     accumulator = 0.0;
+    id = id_;
     links = {};
 }
 
@@ -43,4 +44,8 @@ void Node::reset() {
 void Node::link_to(Node* n, double weight) {
     Link new_link = {n, weight};
     links.push_back(new_link);
+}
+
+size_t Node::get_id() {
+    return id;
 }

@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 2.6)
-include_directories(include)
+include_directories(include ~/projects/googletest/googletest/include/)
+link_directories(~/projects/googletest/googletest/)
 file(GLOB SOURCES "src/*.cpp")
 add_executable(neat ${SOURCES} main.cpp)
+target_link_libraries(neat gtest)
 set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -g -DTEST=1 -pg")
+#add_library(gtest STATIC)
 
 enable_testing()
 add_subdirectory(test)

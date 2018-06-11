@@ -23,15 +23,17 @@ enum class ACTIVATION_FUNCTION {
 class Node {
 private:
     double accumulator;
+    size_t id;
     vector<Link> links;
 public:
     //std::function<double(double)> activation;
-    Node();
+    Node(size_t id);
     void receive_input(double input);
     void send_input() const;
     double get_accumulator() const;
     void reset();
     void link_to(Node* n, double weight);
+    size_t get_id();
     //Node(ACTIVATION_FUNCTION f, double w, double b);
 };
 
