@@ -45,6 +45,7 @@ class ProtoNetwork {
         ProtoNetwork(list<size_t> layer_0_);
         void add_gene(const gene_t& gene);
         gene_t* mutate_valid_link() const;
+        gene_t* mutate_valid_node() const;
         friend ostream& operator<<(ostream& os, const ProtoNetwork& pn);
 };
 

@@ -53,8 +53,7 @@ void ProtoNetwork:: refresh_layers_recursive(proto_node_ptr me, size_t this_laye
 
 gene_t* ProtoNetwork::mutate_valid_link() const {
     size_t max_trials = get_max_edges(nodes.size());
-    while (max_trials > 0) {
-        max_trials--;
+    while (max_trials-- > 0) {
         auto start_it = nodes.begin();
         auto end_it = nodes.begin();
 
@@ -79,6 +78,21 @@ gene_t* ProtoNetwork::mutate_valid_link() const {
 
     }
     return nullptr;
+}
+
+gene_t* ProtoNetwork::mutate_valid_node() const {
+    size_t trials = nodes.size() / 2;
+    while (trials-- > 0) {
+        auto it = nodes.begin();
+        std::advance(it, rand() % nodes.size());
+        proto_node_ptr node = (*it).second;
+        if (node->links.size() == 0)
+            continue;
+
+        auto links_it = node->links.begin();
+        std::advance(links_it, rand() % node->links.size());
+        return new gene_t{0, node->id, (*links_it)->id};
+    }
 }
 
 size_t ProtoNetwork::get_max_edges(size_t n) {

@@ -19,12 +19,10 @@ int main(int argc, char *argv[]) {
     pnet.add_gene({2, 4, 1});
     pnet.add_gene({3, 2, 3});
     for (int i=0; i<100; i++) {
-    auto result = pnet.mutate_valid_link();
-    if (result == nullptr)
-        //std::cout << *result << '\n';
-        std::cout << '^';
-    else
-        std::cout << '*';
+    auto result = pnet.mutate_valid_node();
+    if (result != nullptr)
+        std::cout << *result << '\n';
+        //std::cout << '*';
     }
     cout << pnet << endl;
 }
