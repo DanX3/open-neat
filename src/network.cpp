@@ -88,3 +88,11 @@ void Network::softmax(vector<double>& v) {
     double sum = std::accumulate(v.begin(), v.end(), 0.0);
     std::for_each(v.begin(), v.end(), [sum](double& d){ d /= sum; });
 }
+
+
+/**
+ * Returns how many layers this network has
+ */
+size_t Network::get_layers_count() const {
+    return net.size();
+}
