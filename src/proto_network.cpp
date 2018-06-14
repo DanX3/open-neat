@@ -25,7 +25,6 @@ void ProtoNetwork::remove_link(size_t from, size_t to) {
     set<proto_node_ptr>* links = &nodes.at(from)->links;
     auto result = links->find(nodes.at(to));
     nodes.at(from)->links.erase(result);
-    cout << *nodes.at(from) << endl;
 }
 
 void ProtoNetwork::add_gene(gene_ptr gene, Mutation m) {
@@ -36,17 +35,14 @@ void ProtoNetwork::add_gene(gene_ptr gene, Mutation m) {
         add_node(gene->from);
         add_node(gene->to);
         add_link(gene->from, gene->to);
-        refresh_layers();
     } else {
-        cout << "Adding new node " << gene->from << " -> " << gene->to << endl;
         size_t new_node_id = NodeIDGen::instance().get_id();
         add_node(new_node_id);
         add_link(gene->from, new_node_id);
         add_link(new_node_id, gene->to);
-        cout << "size before " << nodes.at(gene->from)->links.size() << endl;
         remove_link(gene->from, gene->to);
-        cout << "size after " << nodes.at(gene->from)->links.size() << endl;
     }
+    refresh_layers();
 }
 
 ostream& operator<<(ostream& os, const ProtoNetwork& pn) {
@@ -103,7 +99,7 @@ gene_ptr ProtoNetwork::mutate_valid_link() const {
 }
 
 gene_ptr ProtoNetwork::mutate_valid_node() const {
-    size_t trials = nodes.size();
+    size_t trials = nodes.size() / 2;
     while (trials-- > 0) {
         auto it = nodes.begin();
         std::advance(it, rand() % nodes.size());
