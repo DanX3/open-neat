@@ -38,7 +38,6 @@ ostream& operator<<(ostream& os, const ProtoNetwork& pn) {
 void ProtoNetwork::refresh_layers() {
     for (size_t node: layer_0)
         refresh_layers_recursive(nodes.at(node), 0);
-
 }
 
 void ProtoNetwork:: refresh_layers_recursive(proto_node_ptr me, size_t this_layer) {
@@ -51,7 +50,7 @@ void ProtoNetwork:: refresh_layers_recursive(proto_node_ptr me, size_t this_laye
         refresh_layers_recursive(child, children_layer);
 }
 
-gene_t* ProtoNetwork::mutate_valid_link() const {
+gene_ptr ProtoNetwork::mutate_valid_link() const {
     size_t max_trials = get_max_edges(nodes.size());
     while (max_trials-- > 0) {
         auto start_it = nodes.begin();
@@ -74,14 +73,14 @@ gene_t* ProtoNetwork::mutate_valid_link() const {
         if (it != start->links.end())
             continue;
 
-        return new gene_t{0, start->id, end->id};
+        return unique_ptr<gene_t>{new gene_t(0, start->id, end->id)};
 
     }
     return nullptr;
 }
 
-gene_t* ProtoNetwork::mutate_valid_node() const {
-    size_t trials = nodes.size() / 2;
+gene_ptr ProtoNetwork::mutate_valid_node() const {
+    size_t trials = nodes.size();
     while (trials-- > 0) {
         auto it = nodes.begin();
         std::advance(it, rand() % nodes.size());
@@ -91,8 +90,9 @@ gene_t* ProtoNetwork::mutate_valid_node() const {
 
         auto links_it = node->links.begin();
         std::advance(links_it, rand() % node->links.size());
-        return new gene_t{0, node->id, (*links_it)->id};
+        return unique_ptr<gene_t>{new gene_t(0, node->id, (*links_it)->id)};
     }
+    return nullptr;
 }
 
 size_t ProtoNetwork::get_max_edges(size_t n) {

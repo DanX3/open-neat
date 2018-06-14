@@ -9,4 +9,4 @@ set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -g -DTEST=1 -pg")
 #add_library(gtest STATIC)
 
 enable_testing()
-#add_subdirectory(test)
+add_subdirectory(test)

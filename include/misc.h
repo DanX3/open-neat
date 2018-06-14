@@ -8,7 +8,12 @@ using std::cout;
 using std::ostream;
 using std::endl;
 using std::shared_ptr;
+using std::unique_ptr;
 
+
+struct gene_t;
+
+typedef unique_ptr<gene_t> gene_ptr;
 
 struct gene_t {
         const size_t id;

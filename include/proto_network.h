@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include "misc.h"
+#include "test.h"
 
 using std::map;
 using std::list;
@@ -14,6 +15,8 @@ using std::cout;
 using std::endl;
 using std::ostream;
 using std::shared_ptr;
+using std::unique_ptr;
+
 
 
 struct proto_node_t;
@@ -44,8 +47,8 @@ class ProtoNetwork {
         static size_t get_max_edges(size_t vertex);
         ProtoNetwork(list<size_t> layer_0_);
         void add_gene(const gene_t& gene);
-        gene_t* mutate_valid_link() const;
-        gene_t* mutate_valid_node() const;
+        gene_ptr mutate_valid_link() const;
+        gene_ptr mutate_valid_node() const;
         friend ostream& operator<<(ostream& os, const ProtoNetwork& pn);
 };
 
