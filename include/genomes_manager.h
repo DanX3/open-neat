@@ -5,9 +5,11 @@
 #include "node_id_generator.h"
 #include "genome.h"
 
+typedef unique_ptr<Genome> genome_ptr;
+
 class GenomesHandler {
     private:
-        //vector<Genome> genomes;
+        vector<genome_ptr> genomes;
         std::vector<shared_ptr<gene_t>> genes_list;
     protected:
     public:

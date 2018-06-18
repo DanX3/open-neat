@@ -43,7 +43,7 @@ class Config {
     private:
         typedef std::pair<string, double> setting;
         map<string, double> settings = {
-            {"threads_count", 0.0}
+             {"threads_count", 0.0}
             ,{"population_size", 0.0}
             ,{"max_generations", 0.0}
             ,{"fitness_threshold", 0.0}

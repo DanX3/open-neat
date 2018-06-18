@@ -13,7 +13,7 @@ using std::unique_ptr;
 
 struct gene_t;
 
-typedef unique_ptr<gene_t> gene_ptr;
+typedef shared_ptr<gene_t> gene_ptr;
 
 struct gene_t {
         const size_t id;
@@ -42,6 +42,10 @@ struct private_gene_t {
         gene(gene_), weight(weight_), enabled(enabled_) { }
 };
 
+inline bool operator<(const private_gene_t& lhs, const private_gene_t&  rhs) {
+    return lhs.gene.id < rhs.gene.id;
+}
+
 inline shared_ptr<private_gene_t> 
 new_private_gene_t(const gene_t& g, double weight, bool enabled) {
     return shared_ptr<private_gene_t>(new private_gene_t(g, weight, enabled));
@@ -62,6 +66,12 @@ struct link_t {
 
 inline ostream& operator<<(ostream& os, const link_t& l) {
     os << "Link(" << l.from << " -> " << l.to << ")";
+    return os;
+}
+
+template<typename T, typename U>
+ostream& operator<<(ostream& os, std::pair<T,U> pair) {
+    os << "<" << pair.first << ", " << pair.second << ">";
     return os;
 }
 

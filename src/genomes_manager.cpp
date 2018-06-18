@@ -1,6 +1,7 @@
 #include "genomes_manager.h"
 
 GenomesHandler::GenomesHandler(size_t input_size, size_t output_size) {
+    //genomes = {};
     genes_list = {};
     for (size_t i=0; i<input_size; i++) {
         for (size_t j=0; j<output_size; j++) {
