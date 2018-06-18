@@ -132,3 +132,22 @@ void ProtoNetwork::write_to_file(const char* filename) const {
     outfile << "}";
     outfile.close();
 }
+
+size_t ProtoNetwork::get_layers_count() const {
+    size_t max = 0;
+    for (const auto& i: layer_0) {
+        size_t count = recursive_count(*nodes.at(i), 1);
+        max = (count > max) ? count : max;
+    }
+    return max;
+}
+size_t ProtoNetwork::recursive_count(const proto_node_t& node, size_t layer) const {
+    size_t max = layer;
+    layer++;
+    for (const auto& link: node.links) {
+        size_t count = recursive_count(*link, layer);
+        max = (count > max) ? count : max;
+    }
+    return max;
+}
+

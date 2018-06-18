@@ -57,6 +57,7 @@ class ProtoNetwork {
         void refresh_layers_recursive(proto_node_ptr me, size_t this_layer);
         void refresh_layers();
         set<size_t> layer_0;
+        size_t recursive_count(const proto_node_t& node, size_t count) const;
     protected:
     public:
         static size_t get_max_edges(size_t vertex);
@@ -67,6 +68,7 @@ class ProtoNetwork {
         gene_ptr mutate_valid_node() const;
         void write_to_file(const char* filename) const;
         friend ostream& operator<<(ostream& os, const ProtoNetwork& pn);
+        size_t get_layers_count() const;
 
 };
 

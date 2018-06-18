@@ -66,6 +66,11 @@ void heavy_test_mutation() {
     }
 }
 
+void get_layers_count_test() {
+    auto net = create_network();
+    assert(net.get_layers_count() == 3);
+}
+
 int main(int argc, char** argv) {
     try {
         test_get_max_edges();
@@ -73,6 +78,7 @@ int main(int argc, char** argv) {
         test_mutate_link();
         test_refresh_layers();
         heavy_test_mutation();
+        get_layers_count_test();
     } catch(const char* msg) { 
         std::cout << msg << std::endl; 
     }
