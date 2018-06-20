@@ -1,4 +1,4 @@
-# NEAT-Env (WIP)
+# OpenNEAT(WIP)
 
 The target of this project is to train NN in order to play games using the [NEAT algorithm](https://en.wikipedia.org/wiki/Neuroevolution_of_augmenting_topologies) originally designed by K. O. Stanley (original paper [here](nn.cs.utexas.edu/downloads/papers/stanley.ec02.pd)) 
 The learning algorithm is designed to be completely separated from the game environment, which only need to implements the *Environment* interface. 
