@@ -23,6 +23,18 @@ struct gene_t {
             id(id_), from(from_), to(to_) { }
 };
 
+inline bool operator==(const gene_t& lhs, const gene_t& rhs) {
+    if (lhs.id == rhs.id 
+            and lhs.from == rhs.from
+            and lhs.to == rhs.to)
+        return true;
+    return false;
+}
+
+inline bool operator!=(const gene_t& lhs, const gene_t& rhs) {
+    return not (lhs == rhs);
+}
+
 inline shared_ptr<gene_t> new_gene_t(size_t id, size_t from, size_t to) {
     return shared_ptr<gene_t>(new gene_t(id, from, to));
 }
@@ -69,11 +81,11 @@ inline ostream& operator<<(ostream& os, const link_t& l) {
     return os;
 }
 
-template<typename T, typename U>
-ostream& operator<<(ostream& os, std::pair<T,U> pair) {
-    os << "<" << pair.first << ", " << pair.second << ">";
-    return os;
-}
+//template<typename T, class U>
+//ostream& operator<<(ostream& os, std::pair<T,U> pair) {
+    //os << "<" << pair.first << ", " << pair.second << ">";
+    //return os;
+//}
 
 
 #endif

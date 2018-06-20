@@ -13,3 +13,5 @@ add_test(NAME ProtoNetworkTest COMMAND protonetwork)
 #add_executable(config ${SOURCES} ConfigTest.cpp)
 #add_test(NAME ConfigTest COMMAND config)
 
+add_executable(genomehandler ${SOURCES} GenomeHandlerTest.cpp)
+add_test(NAME GenomeHandlerTest COMMAND genomehandler)

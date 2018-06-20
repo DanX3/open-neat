@@ -48,6 +48,17 @@ void test_mutate_link() {
     assert(precision > 0.93);
 }
 
+void test_mutate_link_fully_connected() {
+    auto net = create_network();
+    net.add_gene(gene_ptr(new gene_t{4, 0, 3}));
+    net.add_gene(gene_ptr(new gene_t{5, 2, 4}));
+    net.add_gene(gene_ptr(new gene_t{6, 0, 1}));
+    net.add_gene(gene_ptr(new gene_t{7, 2, 1}));
+    for (int i=0; i<100; i++) {
+        assert(net.mutate_valid_link() == nullptr);
+    }
+}
+
 void test_refresh_layers() {
     auto net = create_network();
     assert(net.nodes.at(0)->layer == 0);
@@ -79,6 +90,7 @@ int main(int argc, char** argv) {
         test_refresh_layers();
         heavy_test_mutation();
         get_layers_count_test();
+        test_mutate_link_fully_connected();
     } catch(const char* msg) { 
         std::cout << msg << std::endl; 
     }

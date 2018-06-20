@@ -1,6 +1,8 @@
 #ifndef ID_GENERATOR_H
 #define ID_GENERATOR_H
 
+typedef unsigned long size_t;
+
 class IDGenerator {
     unsigned long counter;
     public:
@@ -21,8 +23,8 @@ class IDGenerator {
         IDGenerator& operator=(IDGenerator &&) = delete;      // Move assign
 
         // Any other public methods.
-        unsigned long get_id() { return counter++; }
-        unsigned long check_id() { return counter; }
+        size_t get_id() { return counter++; }
+        size_t check_id() { return counter; }
 
     protected:
         IDGenerator() {

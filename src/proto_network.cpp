@@ -3,6 +3,7 @@
 ProtoNetwork::ProtoNetwork(set<size_t> layer_0_) {
     layer_0 = layer_0_;
     srand(time(0));
+    nodes = {};
     for (auto node: layer_0)
         add_node(node);
 }
@@ -27,20 +28,28 @@ void ProtoNetwork::remove_link(size_t from, size_t to) {
     nodes.at(from)->links.erase(result);
 }
 
-void ProtoNetwork::add_gene(gene_ptr gene, Mutation m) {
-    if (gene == nullptr)
-        return;
 
+/**
+ * Applies mutation to the network
+ */
+void ProtoNetwork::add_gene(const gene_ptr gene, Mutation m) {
+    add_gene(*gene, m);
+}
+
+/**
+ * Applies mutation to the network
+ */
+void ProtoNetwork::add_gene(const gene_t& gene, Mutation m) {
     if (m == Mutation::LINK) {
-        add_node(gene->from);
-        add_node(gene->to);
-        add_link(gene->from, gene->to);
+        add_node(gene.from);
+        add_node(gene.to);
+        add_link(gene.from, gene.to);
     } else {
         size_t new_node_id = NodeIDGen::instance().get_id();
         add_node(new_node_id);
-        add_link(gene->from, new_node_id);
-        add_link(new_node_id, gene->to);
-        remove_link(gene->from, gene->to);
+        add_link(gene.from, new_node_id);
+        add_link(new_node_id, gene.to);
+        remove_link(gene.from, gene.to);
     }
     refresh_layers();
 }
@@ -69,9 +78,16 @@ void ProtoNetwork:: refresh_layers_recursive(proto_node_ptr me, size_t this_laye
         refresh_layers_recursive(child, children_layer);
 }
 
+/**
+ * Returns the gene representing the new link.
+ * The new gene has id = 0 since it still does not know if that will be accepted
+ * or not.
+ * May return nullptr if the network is already fully connected. Try anyway to
+ * avoid this behaviour.
+ */
 gene_ptr ProtoNetwork::mutate_valid_link() const {
-    size_t max_trials = get_max_edges(nodes.size());
-    while (max_trials-- > 0) {
+    int trials = 2 * nodes.size();
+    while (trials-- > 0) {
         auto start_it = nodes.begin();
         auto end_it = nodes.begin();
 
@@ -98,9 +114,16 @@ gene_ptr ProtoNetwork::mutate_valid_link() const {
     return nullptr;
 }
 
+/**
+ * Returns a new gene representing the link from the old to the new node.
+ * The new gene has id = 0 since it still does not know if that will be accepted
+ * or not.
+ * Always returns a valid new gene since is always possible to add a new node to
+ * the network.
+ */
 gene_ptr ProtoNetwork::mutate_valid_node() const {
-    size_t trials = nodes.size() / 2;
-    while (trials-- > 0) {
+    gene_ptr mutation = nullptr;
+    while (mutation == nullptr) {
         auto it = nodes.begin();
         std::advance(it, rand() % nodes.size());
         proto_node_ptr node = (*it).second;
@@ -109,15 +132,19 @@ gene_ptr ProtoNetwork::mutate_valid_node() const {
 
         auto links_it = node->links.begin();
         std::advance(links_it, rand() % node->links.size());
-        return gene_ptr{new gene_t(0, node->id, (*links_it)->id)};
+        mutation = gene_ptr{new gene_t(0, node->id, (*links_it)->id)};
     }
-    return nullptr;
+    return mutation;
 }
 
 size_t ProtoNetwork::get_max_edges(size_t n) {
     return n * (n - 1) * 0.5;
 }
 
+/**
+ * Write the network to a dot file.
+ * The image can be generated using i.e. dot -Tsvg output.dot > output.svg
+ */
 void ProtoNetwork::write_to_file(const char* filename) const {
     std::ofstream outfile;
     outfile.open(filename);
@@ -141,6 +168,7 @@ size_t ProtoNetwork::get_layers_count() const {
     }
     return max;
 }
+
 size_t ProtoNetwork::recursive_count(const proto_node_t& node, size_t layer) const {
     size_t max = layer;
     layer++;
