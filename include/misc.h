@@ -87,5 +87,4 @@ inline ostream& operator<<(ostream& os, const link_t& l) {
     //return os;
 //}
 
-
 #endif

@@ -14,8 +14,6 @@ void ProtoNetwork::add_node(size_t id) {
         auto ptr = proto_node_ptr(new proto_node_t(id, 0));
         nodes.insert(std::pair<size_t, proto_node_ptr>(id, ptr));
     }
-    while (NodeIDGen::instance().check_id() <= id)
-        NodeIDGen::instance().get_id();
 }
 
 void ProtoNetwork::add_link(size_t from, size_t to) {
@@ -28,29 +26,27 @@ void ProtoNetwork::remove_link(size_t from, size_t to) {
     nodes.at(from)->links.erase(result);
 }
 
-
 /**
  * Applies mutation to the network
  */
-void ProtoNetwork::add_gene(const gene_ptr gene, Mutation m) {
-    add_gene(*gene, m);
+void ProtoNetwork::add_mutation_link(gene_ptr gene_1) {
+    add_node(gene_1->from);
+    add_node(gene_1->to);
+    add_link(gene_1->from, gene_1->to);
+    refresh_layers();
 }
 
 /**
  * Applies mutation to the network
  */
-void ProtoNetwork::add_gene(const gene_t& gene, Mutation m) {
-    if (m == Mutation::LINK) {
-        add_node(gene.from);
-        add_node(gene.to);
-        add_link(gene.from, gene.to);
-    } else {
-        size_t new_node_id = NodeIDGen::instance().get_id();
-        add_node(new_node_id);
-        add_link(gene.from, new_node_id);
-        add_link(new_node_id, gene.to);
-        remove_link(gene.from, gene.to);
-    }
+void ProtoNetwork::add_mutation_node(gene_ptr gene_1, gene_ptr gene_2) {
+    if (gene_1->id > gene_2->id)
+        std::swap(gene_1, gene_2);
+
+    add_node(gene_1->to);
+    add_link(gene_1->from, gene_1->to);
+    add_link(gene_2->from, gene_2->to);
+    remove_link(gene_1->from, gene_2->to);
     refresh_layers();
 }
 
@@ -115,7 +111,7 @@ gene_ptr ProtoNetwork::mutate_valid_link() const {
 }
 
 /**
- * Returns a new gene representing the link from the old to the new node.
+ * Return the gene with the link where the new node should be placed
  * The new gene has id = 0 since it still does not know if that will be accepted
  * or not.
  * Always returns a valid new gene since is always possible to add a new node to

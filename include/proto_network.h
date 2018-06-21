@@ -9,7 +9,6 @@
 #include <fstream>
 #include "misc.h"
 #include "test.h"
-#include "node_id_generator.h"
 
 using std::map;
 using std::set;
@@ -62,8 +61,8 @@ class ProtoNetwork {
     public:
         static size_t get_max_edges(size_t vertex);
         ProtoNetwork(set<size_t> layer_0_);
-        void add_gene(const gene_ptr gene, Mutation m = Mutation::LINK);
-        void add_gene(const gene_t& gene, Mutation m = Mutation::LINK);
+        void add_mutation_link(gene_ptr gene_1);
+        void add_mutation_node(gene_ptr gene_1, gene_ptr gene_2);
         //void add_gene(const gene_t& gene, Mutation m = Mutation::LINK);
         gene_ptr mutate_valid_link() const;
         gene_ptr mutate_valid_node() const;

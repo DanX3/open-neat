@@ -17,6 +17,7 @@ class Genome {
         map<size_t, private_gene_t> genes;
         shared_ptr<Network> network;
         shared_ptr<ProtoNetwork> proto_net;
+
         set<size_t> layer_0;
         set<size_t> get_layer_0() const;
         void set_weigth(size_t gene_id, double new_weight);
