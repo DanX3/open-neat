@@ -35,8 +35,7 @@ class Genome {
         friend ostream& operator<<(ostream& os, const Genome& g);
         gene_ptr mutate_valid_link() const;
         gene_ptr mutate_valid_node() const;
-       
-        //Genome& crossover(const Genome& rhs) const;
+        Genome& crossover(const Genome& rhs) const;
 
 };
 

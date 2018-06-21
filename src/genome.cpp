@@ -4,8 +4,10 @@ const map<size_t, private_gene_t>& Genome::get_genes() const {
     return genes;
 }
 
-//Genome& Genome::crossover(const Genome& rhs) const {
-//}
+Genome& Genome::crossover(const Genome& rhs) const {
+    Genome result = {*this};
+
+}
 
 Genome::Genome(const vector<gene_ptr>& genes_) {
     genes = {};
@@ -60,6 +62,19 @@ ostream& operator<<(ostream& os, const Genome& g) {
 }
 
 void Genome::add_node(gene_ptr to_new_node, gene_ptr from_new_node) {
+    // Look for the gene with the link to be disabled
+    std::unique_ptr<private_gene_t> old_gene;
+    for (const auto& i: genes) {
+        if (i.second.gene.from == to_new_node->from 
+                and i.second.gene.to == from_new_node->to) {
+            old_gene = std::make_unique<private_gene_t>(i.second);
+            break;
+        }
+    }
+
+    genes.insert({to_new_node->id, {*to_new_node, old_gene->weight, true}});
+    genes.insert({from_new_node->id, {*from_new_node, 1.0, true}});
+    old_gene->enabled = false;
 }
 
 void Genome::add_link(gene_ptr new_link_gene) {
