@@ -4,9 +4,9 @@ const map<size_t, private_gene_t>& Genome::get_genes() const {
     return genes;
 }
 
-Genome& Genome::crossover(const Genome& rhs) const {
-    Genome result = {*this};
-
+Genome::Genome(map<size_t, private_gene_t> genes_) {
+    genes = genes_;
+    setup_protonet();
 }
 
 Genome::Genome(const vector<gene_ptr>& genes_) {
@@ -26,10 +26,17 @@ Genome::Genome(const vector<gene_t>& genes_) {
 
 void Genome::setup_protonet() {
     layer_0 = get_layer_0();
-    proto_net = make_shared<ProtoNetwork>(layer_0);
+    set<size_t> nodes = {};
+    set<std::pair<size_t, size_t>> links = {};
     for (const auto& pair: genes) {
-        proto_net->add_mutation_link(make_shared<gene_t>(pair.second.gene));
+        if (not pair.second.enabled)
+            continue;
+        auto& gene = pair.second.gene;
+        nodes.insert(gene.from);
+        nodes.insert(gene.to);
+        links.insert({gene.from, gene.to});
     }
+    proto_net = make_shared<ProtoNetwork>(layer_0, nodes, links);
 }
 
 void Genome::set_weigth(size_t gene_id, double new_weight) {
@@ -88,4 +95,64 @@ gene_ptr Genome::mutate_valid_link() const {
 
 gene_ptr Genome::mutate_valid_node() const {
     return proto_net->mutate_valid_node();
+}
+
+void Genome::insert_iterator(map<size_t, private_gene_t>& genome, 
+        map<size_t, private_gene_t>::iterator& it) {
+    genome.insert(*it);
+    advance(it, 1);
+}
+
+shared_ptr<Genome> Genome::crossover(const Genome& rhs) {
+    auto& genes1 = genes;
+    auto& genes2 = rhs.genes;
+    map<size_t, private_gene_t> new_genome = {};
+    auto g1 = genes1.begin();
+    auto g2 = genes2.begin();
+    while (g1 != genes1.end() or g2 != genes2.end()) {
+        if (g1 == genes1.end()) {
+            while (g2 != genes2.end())
+                new_genome.insert(*g2++);
+            break;
+        }
+
+        if (g2 == genes2.end()) {
+            while (g1 != genes1.end())
+                new_genome.insert(*g1++);
+            break;
+        }
+
+        const private_gene_t& pg1 = (*g1).second;
+        const private_gene_t& pg2 = (*g2).second;
+
+        if (pg1.gene.id == pg2.gene.id) {
+            if (pg1.enabled and pg2.enabled) {
+                if (fitness < rhs.fitness) {
+                    new_genome.insert(*g2++);
+                    g1++;
+                } else {
+                    new_genome.insert(*g1++);
+                    g2++;
+                }
+            } else if (pg1.enabled) {
+                new_genome.insert(*g2++);
+                g1++;
+            }
+            else {
+                new_genome.insert(*g1++);
+                g2++;
+            }
+        }
+
+        if (pg1.gene.id < pg2.gene.id)
+            new_genome.insert(*g1++);
+
+        if (pg1.gene.id > pg2.gene.id)
+            new_genome.insert(*g2++);
+    }
+    return make_shared<Genome>(new_genome);
+}
+
+void Genome::write_to_file(string filename) const {
+    proto_net->write_to_file(filename.c_str());
 }

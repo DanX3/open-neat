@@ -45,6 +45,7 @@ std::pair<gene_ptr, gene_ptr> get_registered_mutated_node(const ProtoNetwork& ne
 
 void test_mutate_node() {
     auto net = create_network();
+    cout << net << endl;
     int counter = 0;
     const int trials = 1000;
     for (int i=0; i<trials; i++) {
@@ -113,12 +114,12 @@ void get_layers_count_test() {
 int main(int argc, char** argv) {
     try {
         test_get_max_edges();
+        test_refresh_layers();
         test_mutate_node();
         test_mutate_link();
-        test_refresh_layers();
-        heavy_test_mutation();
         get_layers_count_test();
         test_mutate_link_fully_connected();
+        heavy_test_mutation();
     } catch(const char* msg) { 
         std::cout << msg << std::endl; 
     }

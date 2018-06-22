@@ -23,6 +23,9 @@ class Genome {
         void set_weigth(size_t gene_id, double new_weight);
         void set_enable(size_t gene_id, bool enabled);
         void setup_protonet();
+        Genome(map<size_t, private_gene_t> genes_);
+        void insert_iterator(map<size_t, private_gene_t>& genome, 
+                map<size_t, private_gene_t>::iterator& it);
     protected:
     public:
         double fitness;
@@ -35,7 +38,8 @@ class Genome {
         friend ostream& operator<<(ostream& os, const Genome& g);
         gene_ptr mutate_valid_link() const;
         gene_ptr mutate_valid_node() const;
-        Genome& crossover(const Genome& rhs) const;
+        shared_ptr<Genome> crossover(const Genome& rhs) ;
+        void write_to_file(string filename) const;
 
 };
 

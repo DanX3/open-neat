@@ -1,12 +1,27 @@
 #include "proto_network.h"
 
 ProtoNetwork::ProtoNetwork(set<size_t> layer_0_) {
+    init(layer_0_);
+}
+
+ProtoNetwork::ProtoNetwork(set<size_t> layer_0_, set<size_t> nodes, 
+        set<std::pair<size_t, size_t>> links) {
+
+    init(layer_0_);
+    for (const auto& i: nodes)
+        add_node(i);
+    for (const auto& i: links)
+        add_link(i.first, i.second);
+}
+
+void ProtoNetwork::init(set<size_t> layer_0_) {
     layer_0 = layer_0_;
     srand(time(0));
     nodes = {};
     for (auto node: layer_0)
         add_node(node);
 }
+
 
 void ProtoNetwork::add_node(size_t id) {
     auto search_res = nodes.find(id);

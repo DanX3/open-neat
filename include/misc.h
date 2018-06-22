@@ -54,6 +54,14 @@ struct private_gene_t {
         gene(gene_), weight(weight_), enabled(enabled_) { }
 };
 
+inline bool operator==(const private_gene_t& lhs, const private_gene_t& rhs) {
+    if (lhs.gene == rhs.gene
+            and lhs.weight == rhs.weight
+            and lhs.enabled == rhs.enabled)
+        return true;
+    return false;
+}
+
 inline bool operator<(const private_gene_t& lhs, const private_gene_t&  rhs) {
     return lhs.gene.id < rhs.gene.id;
 }
