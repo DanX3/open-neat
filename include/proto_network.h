@@ -9,6 +9,7 @@
 #include <fstream>
 #include "misc.h"
 #include "test.h"
+#include "network.h"
 
 using std::map;
 using std::set;
@@ -16,7 +17,7 @@ using std::cout;
 using std::endl;
 using std::ostream;
 using std::shared_ptr;
-using std::unique_ptr;
+using std::make_shared;
 
 
 enum class Mutation {
@@ -50,12 +51,12 @@ inline ostream& operator<<(ostream& os, const proto_node_t& pn) {
 class ProtoNetwork {
     private:
         map<size_t, proto_node_ptr> nodes;
+        set<size_t> layer_0;
         void add_node(size_t id);
         void add_link(size_t from, size_t to);
         void remove_link(size_t from, size_t to);
         void refresh_layers_recursive(proto_node_ptr me, size_t this_layer);
         void refresh_layers();
-        set<size_t> layer_0;
         size_t recursive_count(const proto_node_t& node, size_t count) const;
         void init(set<size_t> layer_0);
     protected:
@@ -72,6 +73,7 @@ class ProtoNetwork {
         void write_to_file(const char* filename) const;
         friend ostream& operator<<(ostream& os, const ProtoNetwork& pn);
         size_t get_layers_count() const;
+        shared_ptr<Network> get_network(map<size_t, private_gene_t> genes);
 
 };
 

@@ -190,3 +190,34 @@ size_t ProtoNetwork::recursive_count(const proto_node_t& node, size_t layer) con
     return max;
 }
 
+
+shared_ptr<Network> ProtoNetwork::get_network(map<size_t, private_gene_t> genes) {
+    shared_ptr<Network> network = make_shared<Network>(get_layers_count());
+    for (const auto& node: nodes) {
+        network->add_node(node.second->id, node.second->layer);
+    }
+
+    for (const auto& node_start: nodes) {
+        //auto& node_start = 
+        auto start = node_start.second;
+        for (const auto& end: start->links) {
+            auto& node_end = nodes.at(end->id);
+
+            // Look for gene with from->to to get its weight
+            double weight;
+            for (const auto& g: genes)
+                if (g.second.gene.from == start->id and 
+                    g.second.gene.to == node_end->id) {
+                    weight = g.second.weight;
+                    break;
+                }
+            //auto link = find(genes.begin(), genes.end(), 
+                    //[node_start, node_end](auto& i) {
+                    //return (node_start->id == i->gene.from and 
+                            //node_end  ->id == i->gene.to); });
+            network->link_nodes(start->id, start->layer,
+                    node_end->id, node_end->layer, weight);
+        }
+    }
+    return network;
+}

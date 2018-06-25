@@ -106,6 +106,24 @@ void heavy_test_mutation() {
     }
 }
 
+void get_network_test() {
+    auto proto_net = create_network();
+    auto network = proto_net.get_network({
+             {1, {{1, 0, 4}, 0.4, true}}
+            ,{2, {{2, 4, 1}, 4.1, true}}
+            ,{3, {{3, 2, 3}, 2.3, true}}
+            ,{4, {{4, 3, 1}, 3.1, true}}
+    });
+    std::cerr << "size layer #1: " << network->net.at(1).size() << endl;
+    for (const auto& i: network->net.at(1)) {
+        std::cerr << i.second.id << endl;
+    }
+    assert(network->net.at(0).at(0).links.at(0).target->id == 4);
+    assert(network->net.at(0).at(2).links.at(0).target->id == 3);
+    assert(network->net.at(1).at(4).links.at(0).target->id == 1);
+    assert(network->net.at(1).at(3).links.at(0).target->id == 1);
+}
+
 void get_layers_count_test() {
     auto net = create_network();
     assert(net.get_layers_count() == 3);
@@ -120,6 +138,7 @@ int main(int argc, char** argv) {
         get_layers_count_test();
         test_mutate_link_fully_connected();
         heavy_test_mutation();
+        get_network_test();
     } catch(const char* msg) { 
         std::cout << msg << std::endl; 
     }

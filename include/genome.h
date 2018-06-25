@@ -12,10 +12,12 @@ using std::vector;
 using std::shared_ptr;
 using std::make_shared;
 
+typedef shared_ptr<Network> network_ptr;
+
 class Genome {
     private:
         map<size_t, private_gene_t> genes;
-        shared_ptr<Network> network;
+        network_ptr network;
         shared_ptr<ProtoNetwork> proto_net;
 
         set<size_t> layer_0;
@@ -40,6 +42,7 @@ class Genome {
         gene_ptr mutate_valid_node() const;
         shared_ptr<Genome> crossover(const Genome& rhs) ;
         void write_to_file(string filename) const;
+        network_ptr get_network();
 
 };
 

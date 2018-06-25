@@ -156,3 +156,9 @@ shared_ptr<Genome> Genome::crossover(const Genome& rhs) {
 void Genome::write_to_file(string filename) const {
     proto_net->write_to_file(filename.c_str());
 }
+
+network_ptr Genome::get_network() {
+    if (network == nullptr)
+        network = proto_net->get_network(genes);
+    return network;
+}
