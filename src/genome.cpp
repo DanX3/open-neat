@@ -70,11 +70,11 @@ ostream& operator<<(ostream& os, const Genome& g) {
 
 void Genome::add_node(gene_ptr to_new_node, gene_ptr from_new_node) {
     // Look for the gene with the link to be disabled
-    std::unique_ptr<private_gene_t> old_gene;
-    for (const auto& i: genes) {
+    private_gene_t* old_gene;
+    for (auto& i: genes) {
         if (i.second.gene.from == to_new_node->from 
                 and i.second.gene.to == from_new_node->to) {
-            old_gene = std::make_unique<private_gene_t>(i.second);
+            old_gene = &i.second;
             break;
         }
     }

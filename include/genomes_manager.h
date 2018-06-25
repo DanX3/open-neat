@@ -26,6 +26,7 @@ class GenomesHandler {
         GenomesHandler(size_t input_size, size_t output_size);
         friend ostream& operator<<(ostream& os, const GenomesHandler& gh);
         void mutate_genomes();
+        network_ptr get_network(size_t i) const;
 };
 
  #endif

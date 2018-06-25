@@ -50,8 +50,7 @@ void GenomesHandler::mutate_genome_link(genome_ptr genome) {
             new_gene->to
     )};
     genes_list.push_back(new_registered_gene);
-
-    // TODO actually modify the genome
+    genome->add_link(new_registered_gene);
 }
 
 void GenomesHandler::mutate_genome_node(genome_ptr genome) {
@@ -70,8 +69,6 @@ void GenomesHandler::mutate_genome_node(genome_ptr genome) {
     genes_list.push_back(new_registered_gene_from);
     genes_list.push_back(new_registered_gene_to);
     genome->add_node(new_registered_gene_from, new_registered_gene_to);
-
-    // TODO actually modify the genome
 }
 
 void GenomesHandler::mutate_genomes() {
@@ -92,4 +89,9 @@ gene_ptr GenomesHandler::find_gene(size_t from, size_t to,
             return g;
     }
     return nullptr;
+}
+
+
+network_ptr GenomesHandler::get_network(size_t i) const {
+    return genomes.at(i)->get_network();
 }
