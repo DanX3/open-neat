@@ -19,6 +19,7 @@ GenomesHandler::GenomesHandler(size_t input_size, size_t output_size) {
     }
     mutated_links = {};
     mutated_nodes = {};
+    gen_count = 0;
 }
 
 ostream& operator<<(ostream& os, const GenomesHandler& gh) {
@@ -73,6 +74,7 @@ void GenomesHandler::mutate_genome_node(genome_ptr genome) {
 }
 
 void GenomesHandler::mutate_genomes() {
+    gen_count++;
     mutated_nodes.clear();
     mutated_links.clear();
 
@@ -83,6 +85,13 @@ void GenomesHandler::mutate_genomes() {
 
         if (rand() < config.link_mutation_chance)
             mutate_genome_link(genome);
+    }
+
+    // TODO: assign the real fitness after testing
+    for (auto& genome: genomes) {
+        genome->get_network()->fitness = (int)(std::pow(-1, rand()%2+1)) 
+            * rand() % gen_count;
+        cout << genome->get_network()->fitness << endl;
     }
 }
 
@@ -97,5 +106,7 @@ gene_ptr GenomesHandler::find_gene(size_t from, size_t to,
 
 
 network_ptr GenomesHandler::get_network(size_t i) const {
-    return genomes.at(i)->get_network();
+    if (i < genomes.size())
+        return genomes.at(i)->get_network();
+    return nullptr;
 }

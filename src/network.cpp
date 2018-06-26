@@ -49,26 +49,26 @@ void Network::link_nodes(size_t node1_id, unsigned short node1_layer,
  * missing values will raise a std::out_of_range exception
  */
 int Network::evaluate(vector<double> input) {
-    reset();
-    for (size_t i=0; i<net.at(0).size(); i++) {
-        net.at(0).at(i).receive_input(input.at(i));
-    }
+    auto actions = evaluate_with_actions(input);
+    auto max_el = std::max_element(actions.begin(), actions.end());
+    return (max_el - actions.begin());
+}
 
-    for (auto layer: net) {
-        for (auto node: layer) {
-            cout << node.second.get_id() << " = " << node.second.get_accumulator() << endl; 
+vector<double> Network::evaluate_with_actions(vector<double> input) {
+    reset();
+    for (size_t i=0; i<net.at(0).size(); i++)
+        net.at(0).at(i).receive_input(input.at(i));
+
+    for (auto layer: net)
+        for (auto node: layer)
             node.second.send_input();
-        }
-    }
-    
+
     vector<double> actions = {};
     actions.reserve(net.at(net.size() - 1).size());
     for (auto last_node_i: net.at(net.size() - 1))
         actions.push_back(last_node_i.second.get_accumulator());
     softmax(actions);
-    for_each(actions.begin(), actions.end(), [](double d){cout<<d << ' ';});
-    auto max_el = std::max_element(actions.begin(), actions.end());
-    return (max_el - actions.begin());
+    return actions;
 }
 
 /**

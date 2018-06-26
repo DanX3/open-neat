@@ -28,6 +28,7 @@ class Network {
                         size_t node2_id, unsigned short node2_layer,
                         double weight);
         int evaluate(vector<double> input);
+        vector<double> evaluate_with_actions(vector<double> input);
         size_t get_layers_count() const;
 };
 
