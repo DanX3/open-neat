@@ -35,12 +35,12 @@ bool GenomesHandler::gene_in(gene_ptr gene, const vector<gene_ptr>& container) c
     return false;
 }
 
-void GenomesHandler::mutate_genome_link(genome_ptr genome) {
+bool GenomesHandler::mutate_genome_link(genome_ptr genome) {
     gene_ptr new_gene;
     do { // avoid same mutation in the same generation
         new_gene = genome->mutate_valid_link();
         if (new_gene == nullptr) // No new links are possible, quitting...
-            return;
+            return false;
     } while (find_gene(new_gene->from, new_gene->to, mutated_links) != nullptr);
 
     mutated_links.push_back(new_gene);
@@ -51,6 +51,7 @@ void GenomesHandler::mutate_genome_link(genome_ptr genome) {
     )};
     genes_list.push_back(new_registered_gene);
     genome->add_link(new_registered_gene);
+    return true;
 }
 
 void GenomesHandler::mutate_genome_node(genome_ptr genome) {
@@ -72,6 +73,9 @@ void GenomesHandler::mutate_genome_node(genome_ptr genome) {
 }
 
 void GenomesHandler::mutate_genomes() {
+    mutated_nodes.clear();
+    mutated_links.clear();
+
     auto config = Config::instance().get_settings();
     for (auto& genome: genomes) {
         if (rand() < config.node_mutation_chance)

@@ -82,6 +82,7 @@ void Genome::add_node(gene_ptr to_new_node, gene_ptr from_new_node) {
     genes.insert({to_new_node->id, {*to_new_node, old_gene->weight, true}});
     genes.insert({from_new_node->id, {*from_new_node, 1.0, true}});
     old_gene->enabled = false;
+    proto_net->add_mutation_node(to_new_node, from_new_node);
 }
 
 void Genome::add_link(gene_ptr new_link_gene) {

@@ -16,7 +16,7 @@ class GenomesHandler {
         vector<gene_ptr> genes_list;
         vector<gene_ptr> mutated_nodes;
         vector<gene_ptr> mutated_links;
-        void mutate_genome_link(genome_ptr genome);
+        bool mutate_genome_link(genome_ptr genome);
         void mutate_genome_node(genome_ptr genome);
         bool gene_in(gene_ptr gene, const vector<gene_ptr>& container) const;
         gene_ptr find_gene(size_t from, size_t to,
