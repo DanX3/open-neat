@@ -8,10 +8,14 @@
 #include "config.h"
 #include "test.h"
 
+// TODO: Delete this
+//#include <cstdlib>
+
 typedef shared_ptr<Genome> genome_ptr;
 
 class GenomesHandler {
     private:
+        int gen_count;
         vector<genome_ptr> genomes;
         vector<gene_ptr> genes_list;
         vector<gene_ptr> mutated_nodes;
