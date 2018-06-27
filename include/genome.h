@@ -30,6 +30,7 @@ class Genome {
         Genome(map<size_t, private_gene_t> genes_);
         void insert_iterator(map<size_t, private_gene_t>& genome, 
                 map<size_t, private_gene_t>::iterator& it);
+        void reset_weights();
     protected:
     public:
         double fitness;

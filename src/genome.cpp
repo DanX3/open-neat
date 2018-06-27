@@ -126,8 +126,6 @@ shared_ptr<Genome> Genome::crossover(const Genome& rhs) {
         const private_gene_t& pg1 = (*g1).second;
         const private_gene_t& pg2 = (*g2).second;
 
-        //cout << "pg1: " << pg1 << endl;
-        //cout << "pg2: " << pg2 << endl;
         if (pg1.gene.id == pg2.gene.id) {
             if (pg1.enabled and pg2.enabled) {
                 if (fitness < rhs.fitness) {
@@ -148,12 +146,9 @@ shared_ptr<Genome> Genome::crossover(const Genome& rhs) {
             continue;
         }
 
-        if (pg1.gene.id < pg2.gene.id) {
-            cout << "inserting " << pg1 << endl;
+        if (pg1.gene.id < pg2.gene.id)
             new_genome.insert(*g1++);
-        }
         else
-        //if (pg1.gene.id > pg2.gene.id)
             new_genome.insert(*g2++);
     }
     return make_shared<Genome>(new_genome);
@@ -184,26 +179,14 @@ double Genome::delta(const Genome& rhs) const {
     const double c1 = 1.0;
     const double c2 = 1.0;
     const double c3 = 0.4;
-    size_t excess = 0;
-    size_t disjoint = 0;
+    double excess = 0.0;
+    double disjoint = 0.0;
     double accumulator = 0.0;
-    size_t accumulated = 0;
+    double accumulated = 0.0;
 
     auto g1 = genes.begin();
     auto g2 = rhs.genes.begin();
-    while (g1 != genes.end() or g2 != rhs.genes.end()) {
-        if (    g1 == genes.end() or 
-                g2 == rhs.genes.end()) {
-            while (g1 != genes.end()) {
-                g1++;
-                excess++;
-            }
-            while (g2 != rhs.genes.end()) {
-                g2++;
-                excess++;
-            }
-        }
-
+    while (g1 != genes.end() and g2 != rhs.genes.end()) {
         const private_gene_t& pg1 = (*g1).second;
         const private_gene_t& pg2 = (*g2).second;
 
@@ -211,19 +194,32 @@ double Genome::delta(const Genome& rhs) const {
             accumulator += pg1.weight;
             accumulator += pg2.weight;
             accumulated += 2;
-        }
-
-        if (pg1.gene.id < pg2.gene.id) {
             g1++;
-            disjoint++;
-        }
-
-        if (pg1.gene.id > pg2.gene.id) {
             g2++;
+        } else {
+            if (pg1.gene.id < pg2.gene.id)
+                g1++;
+            else
+                g2++;
             disjoint++;
         }
     }
+
+    while (g1 != genes.end()) {
+        g1++;
+        excess++;
+    }
+    while (g2 != rhs.genes.end()) {
+        g2++;
+        excess++;
+    }
     size_t N = max(genes.size(), rhs.genes.size());
     double W = accumulator / accumulated;
-    return ((c1 * excess) + (c2 * disjoint)) / N + c3 * W;
+    return (c1*excess + c2*disjoint) / N + c3*W;
+}
+
+void Genome::reset_weights() {
+    for (auto& i: genes) {
+        i.second.weight = 1.0;
+    }
 }
