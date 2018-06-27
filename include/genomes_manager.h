@@ -8,8 +8,8 @@
 #include "genome.h"
 #include "config.h"
 #include "test.h"
+#include "species.h"
 
-typedef shared_ptr<Genome> genome_ptr;
 
 class GenomesHandler {
     private:
