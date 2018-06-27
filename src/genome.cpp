@@ -176,9 +176,6 @@ void Genome::mutate_weights() {
 }
 
 double Genome::delta(const Genome& rhs) const {
-    const double c1 = 1.0;
-    const double c2 = 1.0;
-    const double c3 = 0.4;
     double excess = 0.0;
     double disjoint = 0.0;
     double accumulator = 0.0;
@@ -191,9 +188,8 @@ double Genome::delta(const Genome& rhs) const {
         const private_gene_t& pg2 = (*g2).second;
 
         if (pg1.gene.id == pg2.gene.id) {
-            accumulator += pg1.weight;
-            accumulator += pg2.weight;
-            accumulated += 2;
+            accumulator += fabs(pg1.weight - pg2.weight);
+            accumulated += 1;
             g1++;
             g2++;
         } else {
@@ -222,4 +218,14 @@ void Genome::reset_weights() {
     for (auto& i: genes) {
         i.second.weight = 1.0;
     }
+}
+
+bool Genome::is_compatible(const Genome& rhs) {
+    if (delta(rhs) < delta_t)
+        return true;
+    return false;
+}
+
+bool Genome::operator<(const Genome& rhs) {
+    return (fitness < rhs.fitness) ? true : false;
 }

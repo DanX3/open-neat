@@ -9,9 +9,6 @@
 #include "config.h"
 #include "test.h"
 
-// TODO: Delete this
-//#include <cstdlib>
-
 typedef shared_ptr<Genome> genome_ptr;
 
 class GenomesHandler {
@@ -26,6 +23,9 @@ class GenomesHandler {
         bool gene_in(gene_ptr gene, const vector<gene_ptr>& container) const;
         gene_ptr find_gene(size_t from, size_t to,
                 const vector<gene_ptr>& container) const;
+        double sh(genome_ptr i, genome_ptr j);
+        void adjust_fitness();
+
     protected:
     public:
         GenomesHandler(size_t input_size, size_t output_size);

@@ -111,3 +111,7 @@ network_ptr GenomesHandler::get_network(size_t i) const {
         return genomes.at(i)->get_network();
     return nullptr;
 }
+
+double GenomesHandler::sh(genome_ptr i, genome_ptr j) {
+    return (i->delta(*j) < Genome::delta_t) ? 1.0 : 0.0;
+}

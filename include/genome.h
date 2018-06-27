@@ -33,6 +33,10 @@ class Genome {
         void reset_weights();
     protected:
     public:
+        static constexpr double c1 = 1.0;
+        static constexpr double c2 = 1.0;
+        static constexpr double c3 = 0.4;
+        static constexpr double delta_t = 1.0;
         double fitness;
         const map<size_t, private_gene_t>& get_genes() const;
         Genome(const vector<gene_ptr>& genes_);
@@ -47,6 +51,8 @@ class Genome {
         void write_to_file(string filename) const;
         network_ptr get_network() const;
         double delta(const Genome& rhs) const;
+        bool is_compatible(const Genome& rhs);
+        bool operator<(const Genome& rhs);
 
 };
 
