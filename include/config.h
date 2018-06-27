@@ -23,6 +23,7 @@ struct Configuration {
     bool fitness_threshold_enabled;
     double link_mutation_chance;
     double node_mutation_chance;
+    double weight_max;
 };
 
 class Config {

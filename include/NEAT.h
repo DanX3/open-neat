@@ -6,6 +6,7 @@
 #include "config.h"
 //#include "network.h"
 #include "genomes_manager.h"
+#include <unistd.h>
 
 using std::shared_ptr;
 using std::make_shared;

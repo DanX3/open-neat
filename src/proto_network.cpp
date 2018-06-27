@@ -16,7 +16,6 @@ ProtoNetwork::ProtoNetwork(set<size_t> layer_0_, set<size_t> nodes,
 
 void ProtoNetwork::init(set<size_t> layer_0_) {
     layer_0 = layer_0_;
-    srand(time(0));
     nodes = {};
     for (auto node: layer_0)
         add_node(node);

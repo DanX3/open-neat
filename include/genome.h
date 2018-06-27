@@ -7,6 +7,7 @@
 #include "network.h"
 #include "proto_network.h"
 #include "test.h"
+#include "config.h"
 
 using std::vector;
 using std::shared_ptr;
@@ -40,6 +41,7 @@ class Genome {
         friend ostream& operator<<(ostream& os, const Genome& g);
         gene_ptr mutate_valid_link() const;
         gene_ptr mutate_valid_node() const;
+        void mutate_weights();
         shared_ptr<Genome> crossover(const Genome& rhs) ;
         void write_to_file(string filename) const;
         network_ptr get_network();

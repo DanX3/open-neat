@@ -89,6 +89,10 @@ inline ostream& operator<<(ostream& os, const link_t& l) {
     return os;
 }
 
+inline double randf() {
+    return ((double) rand() / RAND_MAX);
+}
+
 //template<typename T, class U>
 //ostream& operator<<(ostream& os, std::pair<T,U> pair) {
     //os << "<" << pair.first << ", " << pair.second << ">";

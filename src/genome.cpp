@@ -13,7 +13,6 @@ Genome::Genome(const vector<gene_ptr>& genes_) {
     genes = {};
     for (const auto& g: genes_)
         genes.insert({g->id, private_gene_t(*g, 1.0, true)});
-
     setup_protonet();
 }
 
@@ -36,6 +35,7 @@ void Genome::setup_protonet() {
         nodes.insert(gene.to);
         links.insert({gene.from, gene.to});
     }
+    mutate_weights();
     proto_net = make_shared<ProtoNetwork>(layer_0, nodes, links);
 }
 
@@ -163,3 +163,16 @@ network_ptr Genome::get_network() {
         network = proto_net->get_network(genes);
     return network;
 }
+
+void Genome::mutate_weights() {
+    double weight_max = Config::instance().get_settings().weight_max;
+    for (auto& gene: genes)
+        if (randf() < 0.8) {
+            if (randf() < 0.9)
+                gene.second.weight += 2 * randf() - 1.0;
+            else
+                gene.second.weight = randf() * weight_max;
+        }
+}
+
+

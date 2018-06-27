@@ -1,6 +1,7 @@
 #ifndef GENOMES_HANDLER_H
 #define GENOMES_HANDLER_H
 
+#include <unistd.h>
 #include "id_generator.h"
 #include "node_id_generator.h"
 #include "id_generator.h"

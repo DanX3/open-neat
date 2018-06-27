@@ -2,6 +2,7 @@
 
 GenomesHandler::GenomesHandler(size_t input_size, size_t output_size) {
     auto config = Config::instance().get_settings();
+    srand(getpid());
     
     // gene's list initialization
     genes_list = {};
