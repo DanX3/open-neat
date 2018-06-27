@@ -126,6 +126,8 @@ shared_ptr<Genome> Genome::crossover(const Genome& rhs) {
         const private_gene_t& pg1 = (*g1).second;
         const private_gene_t& pg2 = (*g2).second;
 
+        //cout << "pg1: " << pg1 << endl;
+        //cout << "pg2: " << pg2 << endl;
         if (pg1.gene.id == pg2.gene.id) {
             if (pg1.enabled and pg2.enabled) {
                 if (fitness < rhs.fitness) {
@@ -143,12 +145,15 @@ shared_ptr<Genome> Genome::crossover(const Genome& rhs) {
                 new_genome.insert(*g1++);
                 g2++;
             }
+            continue;
         }
 
-        if (pg1.gene.id < pg2.gene.id)
+        if (pg1.gene.id < pg2.gene.id) {
+            cout << "inserting " << pg1 << endl;
             new_genome.insert(*g1++);
-
-        if (pg1.gene.id > pg2.gene.id)
+        }
+        else
+        //if (pg1.gene.id > pg2.gene.id)
             new_genome.insert(*g2++);
     }
     return make_shared<Genome>(new_genome);
@@ -158,10 +163,10 @@ void Genome::write_to_file(string filename) const {
     proto_net->write_to_file(filename.c_str());
 }
 
-network_ptr Genome::get_network() {
-    if (network == nullptr)
-        network = proto_net->get_network(genes);
-    return network;
+network_ptr Genome::get_network() const {
+    //if (network == nullptr)
+        //network = proto_net->get_network(genes);
+    return proto_net->get_network(genes);
 }
 
 void Genome::mutate_weights() {
@@ -175,4 +180,50 @@ void Genome::mutate_weights() {
         }
 }
 
+double Genome::delta(const Genome& rhs) const {
+    const double c1 = 1.0;
+    const double c2 = 1.0;
+    const double c3 = 0.4;
+    size_t excess = 0;
+    size_t disjoint = 0;
+    double accumulator = 0.0;
+    size_t accumulated = 0;
 
+    auto g1 = genes.begin();
+    auto g2 = rhs.genes.begin();
+    while (g1 != genes.end() or g2 != rhs.genes.end()) {
+        if (    g1 == genes.end() or 
+                g2 == rhs.genes.end()) {
+            while (g1 != genes.end()) {
+                g1++;
+                excess++;
+            }
+            while (g2 != rhs.genes.end()) {
+                g2++;
+                excess++;
+            }
+        }
+
+        const private_gene_t& pg1 = (*g1).second;
+        const private_gene_t& pg2 = (*g2).second;
+
+        if (pg1.gene.id == pg2.gene.id) {
+            accumulator += pg1.weight;
+            accumulator += pg2.weight;
+            accumulated += 2;
+        }
+
+        if (pg1.gene.id < pg2.gene.id) {
+            g1++;
+            disjoint++;
+        }
+
+        if (pg1.gene.id > pg2.gene.id) {
+            g2++;
+            disjoint++;
+        }
+    }
+    size_t N = max(genes.size(), rhs.genes.size());
+    double W = accumulator / accumulated;
+    return ((c1 * excess) + (c2 * disjoint)) / N + c3 * W;
+}

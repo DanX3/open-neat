@@ -12,13 +12,14 @@
 using std::vector;
 using std::shared_ptr;
 using std::make_shared;
+using std::max;
 
 typedef shared_ptr<Network> network_ptr;
 
 class Genome {
     private:
         map<size_t, private_gene_t> genes;
-        network_ptr network;
+        //network_ptr network;
         shared_ptr<ProtoNetwork> proto_net;
 
         set<size_t> layer_0;
@@ -33,7 +34,6 @@ class Genome {
     public:
         double fitness;
         const map<size_t, private_gene_t>& get_genes() const;
-        //Genome(const vector<gene_ptr>& genes_);
         Genome(const vector<gene_ptr>& genes_);
         Genome(const vector<gene_t>& genes_);
         void add_node(gene_ptr to_new_node, gene_ptr from_new_node);
@@ -44,7 +44,8 @@ class Genome {
         void mutate_weights();
         shared_ptr<Genome> crossover(const Genome& rhs) ;
         void write_to_file(string filename) const;
-        network_ptr get_network();
+        network_ptr get_network() const;
+        double delta(const Genome& rhs) const;
 
 };
 

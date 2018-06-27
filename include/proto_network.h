@@ -73,7 +73,7 @@ class ProtoNetwork {
         void write_to_file(const char* filename) const;
         friend ostream& operator<<(ostream& os, const ProtoNetwork& pn);
         size_t get_layers_count() const;
-        shared_ptr<Network> get_network(map<size_t, private_gene_t> genes);
+        shared_ptr<Network> get_network(const map<size_t, private_gene_t> genes) const;
 
 };
 

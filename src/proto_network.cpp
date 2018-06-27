@@ -12,6 +12,7 @@ ProtoNetwork::ProtoNetwork(set<size_t> layer_0_, set<size_t> nodes,
         add_node(i);
     for (const auto& i: links)
         add_link(i.first, i.second);
+    refresh_layers();
 }
 
 void ProtoNetwork::init(set<size_t> layer_0_) {
@@ -190,8 +191,8 @@ size_t ProtoNetwork::recursive_count(const proto_node_t& node, size_t layer) con
 }
 
 
-shared_ptr<Network> ProtoNetwork::get_network(map<size_t, private_gene_t> genes) {
-    refresh_layers();
+shared_ptr<Network> ProtoNetwork::get_network(const map<size_t, private_gene_t> genes) const {
+    //refresh_layers();
     shared_ptr<Network> network = make_shared<Network>(get_layers_count());
     for (const auto& node: nodes) {
         network->add_node(node.second->id, node.second->layer);
