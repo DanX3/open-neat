@@ -25,13 +25,14 @@ struct StepResult {
 class NEAT {
     private:
     protected:
-        shared_ptr<Observation> obs;
-        virtual double play(network_ptr net) = 0;
+        //shared_ptr<Observation> obs;
         GenomesHandler handler;
+        virtual double play(network_ptr net) = 0;
         void train_generation();
     public:
         NEAT(size_t input_size, size_t output_size);
         void train(size_t gen_count = 0);
+        void print_network() const;
 };
 
  #endif

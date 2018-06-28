@@ -13,17 +13,20 @@ GenomesHandler::GenomesHandler(size_t input_size, size_t output_size) {
     }
 
     // genomes list initialization
-    speciate();
     mutated_links = {};
     mutated_nodes = {};
     gen_count = 0;
+    auto config = Config::instance().get_settings();
+    pop_size = config.population_size;
+    speciate(true);
 }
 
-void GenomesHandler::speciate() {
+void GenomesHandler::speciate(bool to_populate) {
     species = {};
-    auto config = Config::instance().get_settings();
-    for (size_t i=0; i<config.population_size; i++) {
-        genomes.push(make_shared<Genome>(genes_list));
+    if (to_populate) {
+        for (size_t i=0; i<pop_size; i++) {
+            genomes.push(make_shared<Genome>(genes_list));
+        }
     }
 
     while (not genomes.empty()) {
@@ -114,15 +117,35 @@ void GenomesHandler::mutate_genomes() {
                 mutate_genome_link(genome);
         }
     }
+}
 
-    // TODO: assign the real fitness after testing
-    for (auto& species_i: species) {
-        for (const auto& genome: species_i.get_genomes()) {
-            genome->get_network()->fitness = (int)(std::pow(-1, rand()%2+1)) 
-                * rand() % gen_count;
-            cout << genome->get_network()->fitness << endl;
-        }
+//void GenomesHandler::evaluate_genomes() {
+    //// TODO: assign the real fitness after testing
+    //for (auto& species_i: species) {
+        //for (const auto& genome: species_i.get_genomes()) {
+            //genome->get_network()->fitness = (int)(std::pow(-1, rand()%2+1)) 
+                //* rand() % gen_count;
+            //cout << genome->get_network()->fitness << endl;
+        //}
+    //}
+//}
+
+void GenomesHandler::reproduce() {
+    // Selection
+    for (auto& s: species)
+        s.select_best_genomes();
+
+    size_t genomes_left = 0;
+    for (const auto& s: species)
+        genomes_left += s.get_size();
+
+     //assert(genomes.empty());
+    // Reproduction
+    while (genomes.size() < pop_size) {
+        genomes.push(get_genome(rand() % genomes_left)
+                ->crossover(*get_genome(rand() % genomes_left)));
     }
+    speciate();
 }
 
 gene_ptr GenomesHandler::find_gene(size_t from, size_t to,
@@ -135,29 +158,29 @@ gene_ptr GenomesHandler::find_gene(size_t from, size_t to,
 }
 
 
-network_ptr GenomesHandler::get_network(size_t i) const {
-    //if (i < genomes.size())
-        //return genomes.at(i)->get_network();
+//network_ptr GenomesHandler::get_network(size_t i) const {
+    ////if (i < genomes.size())
+        ////return genomes.at(i)->get_network();
     
-    for (const auto& species_i: species) {
-        if (i < species_i.get_genomes().size())
-            return species_i.get_genomes().at(i)->get_network();
-        else
-            i -= species_i.get_genomes().size();
-    }
-    return nullptr;
-}
+    //for (const auto& species_i: species) {
+        //if (i < species_i.get_size())
+            //return species_i.get_genomes().at(i)->get_network();
+        //else
+            //i -= species_i.get_size();
+    //}
+    //return nullptr;
+//}
 
 double GenomesHandler::sh(genome_ptr i, genome_ptr j) {
     return (i->delta(*j) < Genome::delta_t) ? 1.0 : 0.0;
 }
 
-genome_ptr GenomesHandler::get_genome(size_t i) {
+genome_ptr GenomesHandler::get_genome(size_t i) const {
     for (const auto& species_i: species) {
-        if (i < species_i.get_genomes().size())
+        if (i < species_i.get_size())
             return species_i.get_genomes().at(i);
         else
-            i -= species_i.get_genomes().size();
+            i -= species_i.get_size();
     }
     return nullptr;
 }

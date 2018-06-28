@@ -16,6 +16,7 @@ using std::stack;
 class GenomesHandler {
     private:
         int gen_count;
+        size_t pop_size;
         vector<Species> species;
         stack<genome_ptr> genomes;
         vector<gene_ptr> genes_list;
@@ -28,15 +29,16 @@ class GenomesHandler {
                 const vector<gene_ptr>& container) const;
         double sh(genome_ptr i, genome_ptr j);
         void adjust_fitness();
-        void speciate();
-        genome_ptr get_genome(size_t i);
-
+        void speciate(bool to_populate = false);
     protected:
     public:
         GenomesHandler(size_t input_size, size_t output_size);
         friend ostream& operator<<(ostream& os, const GenomesHandler& gh);
         void mutate_genomes();
-        network_ptr get_network(size_t i) const;
+        //void evaluate_genomes();
+        void reproduce();
+        //network_ptr get_network(size_t i) const;
+        genome_ptr get_genome(size_t i) const;
 };
 
  #endif

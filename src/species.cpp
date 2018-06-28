@@ -38,3 +38,7 @@ ostream& operator<<(ostream& os, const Species& t) {
        << "\tsize " << t.genomes.size() << endl;
     return os;
 }
+
+size_t Species::get_size() const {
+    return genomes.size();
+}
