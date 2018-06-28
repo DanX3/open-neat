@@ -1,7 +1,6 @@
 #include "genomes_manager.h"
 
 GenomesHandler::GenomesHandler(size_t input_size, size_t output_size) {
-    auto config = Config::instance().get_settings();
     srand(getpid());
     
     // gene's list initialization
@@ -14,18 +13,44 @@ GenomesHandler::GenomesHandler(size_t input_size, size_t output_size) {
     }
 
     // genomes list initialization
-    genomes = {};
-    for (size_t i=0; i<config.population_size; i++) {
-        genomes.push_back(make_shared<Genome>(genes_list));
-    }
+    speciate();
     mutated_links = {};
     mutated_nodes = {};
     gen_count = 0;
 }
 
+void GenomesHandler::speciate() {
+    species = {};
+    auto config = Config::instance().get_settings();
+    for (size_t i=0; i<config.population_size; i++) {
+        genomes.push(make_shared<Genome>(genes_list));
+    }
+
+    while (not genomes.empty()) {
+        bool inserted = false;
+        for (auto& species_i: species) {
+            if (species_i.is_compatible_with(*genomes.top())) {
+                species_i.add_genome(genomes.top());
+                genomes.pop();
+                inserted = true;
+                break;
+            }
+        }
+        if (not inserted) {
+            species.push_back({genomes.top()});
+            (*(species.end()-1)).add_genome(genomes.top());
+            genomes.pop();
+        }
+    }
+}
+
 ostream& operator<<(ostream& os, const GenomesHandler& gh) {
-    for (auto i: gh.genes_list)
-        cout << *i << endl;
+    //for (auto i: gh.genes_list)
+        //cout << *i << endl;
+    os << "GenomesHandler" << endl;
+    for (const auto& species_i: gh.species) {
+        os << species_i << endl;
+    }
     return os;
 }
 
@@ -80,19 +105,23 @@ void GenomesHandler::mutate_genomes() {
     mutated_links.clear();
 
     auto config = Config::instance().get_settings();
-    for (auto& genome: genomes) {
-        if (rand() < config.node_mutation_chance)
-            mutate_genome_node(genome);
+    for (auto& species_i: species) {
+        for (const auto& genome: species_i.get_genomes()) {
+            if (rand() < config.node_mutation_chance)
+                mutate_genome_node(genome);
 
-        if (rand() < config.link_mutation_chance)
-            mutate_genome_link(genome);
+            if (rand() < config.link_mutation_chance)
+                mutate_genome_link(genome);
+        }
     }
 
     // TODO: assign the real fitness after testing
-    for (auto& genome: genomes) {
-        genome->get_network()->fitness = (int)(std::pow(-1, rand()%2+1)) 
-            * rand() % gen_count;
-        cout << genome->get_network()->fitness << endl;
+    for (auto& species_i: species) {
+        for (const auto& genome: species_i.get_genomes()) {
+            genome->get_network()->fitness = (int)(std::pow(-1, rand()%2+1)) 
+                * rand() % gen_count;
+            cout << genome->get_network()->fitness << endl;
+        }
     }
 }
 
@@ -107,11 +136,28 @@ gene_ptr GenomesHandler::find_gene(size_t from, size_t to,
 
 
 network_ptr GenomesHandler::get_network(size_t i) const {
-    if (i < genomes.size())
-        return genomes.at(i)->get_network();
+    //if (i < genomes.size())
+        //return genomes.at(i)->get_network();
+    
+    for (const auto& species_i: species) {
+        if (i < species_i.get_genomes().size())
+            return species_i.get_genomes().at(i)->get_network();
+        else
+            i -= species_i.get_genomes().size();
+    }
     return nullptr;
 }
 
 double GenomesHandler::sh(genome_ptr i, genome_ptr j) {
     return (i->delta(*j) < Genome::delta_t) ? 1.0 : 0.0;
+}
+
+genome_ptr GenomesHandler::get_genome(size_t i) {
+    for (const auto& species_i: species) {
+        if (i < species_i.get_genomes().size())
+            return species_i.get_genomes().at(i);
+        else
+            i -= species_i.get_genomes().size();
+    }
+    return nullptr;
 }

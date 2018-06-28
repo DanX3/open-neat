@@ -24,6 +24,7 @@ struct Configuration {
     double link_mutation_chance;
     double node_mutation_chance;
     double weight_max;
+    double selectiveness;
 };
 
 class Config {

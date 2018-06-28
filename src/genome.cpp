@@ -25,6 +25,7 @@ Genome::Genome(const vector<gene_t>& genes_) {
 
 void Genome::setup_protonet() {
     layer_0 = get_layer_0();
+    fitness = 0.0;
     set<size_t> nodes = {};
     set<std::pair<size_t, size_t>> links = {};
     for (const auto& pair: genes) {

@@ -7,15 +7,19 @@ typedef shared_ptr<Genome> genome_ptr;
 
 class Species {
     private:
+        double selectiveness;
         vector<genome_ptr> genomes;
         genome_ptr representative;
     protected:
     public:
         Species(genome_ptr repr);
-        bool is_compatible_with(const Genome& genome);
+        bool is_compatible_with(const Genome& genome) const;
         void add_genome(genome_ptr new_genome);
-        vector<genome_ptr>& get_genomes();
+        vector<genome_ptr> get_genomes() const;
         void select_best_genomes();
+        friend ostream& operator<<(ostream& os, const Species& t);
 };
+
+bool operator<(genome_ptr lhs, genome_ptr rhs);
 
  #endif

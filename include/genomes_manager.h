@@ -2,6 +2,7 @@
 #define GENOMES_HANDLER_H
 
 #include <unistd.h>
+#include <stack>
 #include "id_generator.h"
 #include "node_id_generator.h"
 #include "id_generator.h"
@@ -10,11 +11,13 @@
 #include "test.h"
 #include "species.h"
 
+using std::stack;
 
 class GenomesHandler {
     private:
         int gen_count;
-        vector<genome_ptr> genomes;
+        vector<Species> species;
+        stack<genome_ptr> genomes;
         vector<gene_ptr> genes_list;
         vector<gene_ptr> mutated_nodes;
         vector<gene_ptr> mutated_links;
@@ -25,6 +28,8 @@ class GenomesHandler {
                 const vector<gene_ptr>& container) const;
         double sh(genome_ptr i, genome_ptr j);
         void adjust_fitness();
+        void speciate();
+        genome_ptr get_genome(size_t i);
 
     protected:
     public:
