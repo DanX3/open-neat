@@ -4,8 +4,10 @@ OtherXor::OtherXor() : NEAT(2, 2) { }
 
 double operator-(vector<double>& rhs, vector<double>& lhs) {
     double accumulator = 0.0;
-    if (rhs.size() != lhs.size())
+    if (rhs.size() != lhs.size()) {
+        std::cerr << "Size mismatch " << lhs.size() << " != " << rhs.size() << endl;
         throw "vector<double> error: size mismatch";
+    }
     for (size_t i=0; i<rhs.size(); i++) {
         accumulator += fabs(rhs.at(i) - lhs.at(i));
     }

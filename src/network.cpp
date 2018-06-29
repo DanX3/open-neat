@@ -63,10 +63,16 @@ vector<double> Network::evaluate_with_actions(vector<double> input) {
         for (auto node: layer)
             node.second.send_input();
 
+    auto output = get_output_nodes();
     vector<double> actions = {};
-    actions.reserve(net.at(net.size() - 1).size());
-    for (auto last_node_i: net.at(net.size() - 1))
-        actions.push_back(last_node_i.second.get_accumulator());
+    actions.reserve(output.size());
+    if (actions.capacity() != 2)
+        cout << *this << endl;
+    for (const auto& i: output) {
+        actions.push_back(i->get_accumulator());
+    }
+    //for (auto last_node_i: net.at(net.size() - 1))
+        //actions.push_back(last_node_i.second.get_accumulator());
     softmax(actions);
     return actions;
 }
@@ -95,4 +101,32 @@ void Network::softmax(vector<double>& v) {
  */
 size_t Network::get_layers_count() const {
     return net.size();
+}
+
+ostream& operator<<(ostream& os, const Network& t) {
+    os << "Network" << endl;
+    size_t counter = 0;
+    for (const auto& layer: t.net) {
+        os << "Layer #" << counter++ << " size " << layer.size() << endl;
+        os << "\t";
+        for (const auto& pair: layer)
+            os << pair.first << " ";
+        os << endl;
+    }
+    for (const auto& layer: t.net) {
+        for (const auto& pair: layer) {
+            cout << pair.second << endl;
+        }
+        os << endl;
+    }
+    return os;
+}
+
+vector<const Node*> Network::get_output_nodes() {
+    vector<const Node*> output{};
+    for (int i=net.size()-1; i>=0; i--)
+        for (const auto& node: net.at(i))
+            if (not node.second.has_outgoing_links())
+                output.push_back(&node.second);
+    return output;
 }

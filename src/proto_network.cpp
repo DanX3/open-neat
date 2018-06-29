@@ -1,21 +1,23 @@
 #include "proto_network.h"
 
-ProtoNetwork::ProtoNetwork(set<size_t> layer_0_) {
-    init(layer_0_);
-}
-
 ProtoNetwork::ProtoNetwork(set<size_t> layer_0_, set<size_t> nodes, 
-        set<std::pair<size_t, size_t>> links) {
+        set<std::pair<size_t, size_t>> links) :
+        ProtoNetwork(layer_0_) {
 
-    init(layer_0_);
     for (const auto& i: nodes)
         add_node(i);
     for (const auto& i: links)
         add_link(i.first, i.second);
     refresh_layers();
+
+    layer_n = {};
+    for (const auto& i: this->nodes) {
+        if (not i.second->has_links())
+            layer_n.insert(i.second->id);
+    }
 }
 
-void ProtoNetwork::init(set<size_t> layer_0_) {
+ProtoNetwork::ProtoNetwork(set<size_t> layer_0_) {
     layer_0 = layer_0_;
     nodes = {};
     for (auto node: layer_0)
@@ -109,16 +111,25 @@ gene_ptr ProtoNetwork::mutate_valid_link() const {
         start = (*start_it).second;
         end = (*end_it).second;
 
-        if (start->layer == end->layer)
-            continue;
-
-        if (start->layer >= end->layer)
+        if (start->layer > end->layer)
             std::swap(start, end);
 
-        auto it = std::find(start->links.begin(), start->links.end(), end);
-        if (it != start->links.end())
+        if (start->layer >= end->layer
+                or layer_n.count(start->id) != 0)
+                //or layer_n.count(end  ->id) != 0)
             continue;
 
+
+        bool already_existing = false;
+        for (auto i: start->links) {
+            if (i->id == end->id) {
+                already_existing = true;
+                break;
+            }
+        }
+        if (already_existing)
+            continue;
+        std::cerr << "Adding gene " << start->id << " -> " << end->id << endl;
         return gene_ptr{new gene_t(0, start->id, end->id)};
 
     }

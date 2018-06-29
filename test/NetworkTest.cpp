@@ -29,10 +29,31 @@ void evaluate_test() {
     assert(n.evaluate({1.0, 1.0, 1.0}) == 1);
 }
 
+void get_output_nodes_test() {
+    Network n = {3};
+    n.add_node({0}, 0);
+    n.add_node({1}, 0);
+    n.add_node({2}, 1);
+    n.add_node({4}, 1);
+    n.add_node({3}, 2);
+    n.link_nodes(0, 0, 2, 1, 1.0);
+    n.link_nodes(0, 0, 4, 1, 1.0);
+    n.link_nodes(1, 0, 2, 1, 1.0);
+    n.link_nodes(1, 0, 4, 1, 1.0);
+    n.link_nodes(4, 1, 3, 2, 1.0);
+    n.finalize();
+    auto output = n.get_output_nodes();
+    assert(output.size() == 2);
+    assert(output.at(0)->get_id() == 3);
+    assert(output.at(1)->get_id() == 2);
+
+}
+
 int main(int argc, char** argv) {
     try {
         softmax_test();
         evaluate_test();
+        get_output_nodes_test();
     } catch(const char* msg) { 
         std::cout << msg << std::endl; 
     }

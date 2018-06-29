@@ -11,6 +11,7 @@ Config::Config(string filename) {
         ,{"node_mutation_chance", 0.0}
         ,{"weight_max", 0.0}
         ,{"selectiveness", 0.0}
+        ,{"delta_t", 1.0}
     };
     std::ifstream istream(filename, istream.in);
     if (not istream.is_open()) {
@@ -61,6 +62,7 @@ Configuration Config::associate_values(map<string, double> vals) {
     c.node_mutation_chance = (double)vals.at("node_mutation_chance");
     c.weight_max = (double)vals.at("weight_max");
     c.selectiveness = (double)vals.at("selectiveness");
+    c.selectiveness = (double)vals.at("delta_t");
     return c;
 }
 

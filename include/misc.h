@@ -24,8 +24,7 @@ struct gene_t {
 };
 
 inline bool operator==(const gene_t& lhs, const gene_t& rhs) {
-    if (lhs.id == rhs.id 
-            and lhs.from == rhs.from
+    if ( lhs.from == rhs.from
             and lhs.to == rhs.to)
         return true;
     return false;
@@ -33,6 +32,10 @@ inline bool operator==(const gene_t& lhs, const gene_t& rhs) {
 
 inline bool operator!=(const gene_t& lhs, const gene_t& rhs) {
     return not (lhs == rhs);
+}
+
+inline bool operator<(const gene_t& lhs, const gene_t& rhs) {
+    return rhs.id < rhs.id;
 }
 
 inline shared_ptr<gene_t> new_gene_t(size_t id, size_t from, size_t to) {

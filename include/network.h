@@ -9,6 +9,7 @@ using std::vector;
 using std::map;
 using std::cout;
 using std::endl;
+using std::ostream;
 
 
 class Network {
@@ -19,6 +20,7 @@ class Network {
 
     protected:
     public:
+        vector<const Node*> get_output_nodes();
         double fitness;
         static void softmax(vector<double> &actions);
         Network(unsigned short layers_count);
@@ -30,6 +32,7 @@ class Network {
         int evaluate(vector<double> input);
         vector<double> evaluate_with_actions(vector<double> input);
         size_t get_layers_count() const;
+        friend ostream& operator<<(ostream& os, const Network& t);
 };
 
  #endif

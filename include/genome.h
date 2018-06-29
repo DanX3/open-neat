@@ -39,7 +39,7 @@ class Genome {
         static constexpr double delta_t = 1.0;
         double fitness;
         const map<size_t, private_gene_t>& get_genes() const;
-        Genome(const vector<gene_ptr>& genes_);
+        Genome(const set<gene_ptr>& genes_);
         Genome(const vector<gene_t>& genes_);
         void add_node(gene_ptr to_new_node, gene_ptr from_new_node);
         void add_link(gene_ptr new_link_gene);
@@ -53,6 +53,7 @@ class Genome {
         double delta(const Genome& rhs) const;
         bool is_compatible(const Genome& rhs);
         bool operator<(const Genome& rhs);
+        size_t get_size() const;
 
 };
 

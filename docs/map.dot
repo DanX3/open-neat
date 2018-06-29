@@ -1,10 +1,10 @@
 digraph structure {
     node[shape=box]
-    NEAT-> {Population, Env}
-    Population -> {Network, GenomeBuilder}
-    GenomeBuilder -> Genome
+    NEAT-> {GenomesHandler, Env}
+    GenomesHandler -> {Network, Genome}
     Network -> "Node"
-    Genome -> {Gene, Network, "Node"}
-    {NEAT, Population} -> Config
+    Genome -> {Gene, Network, ProtoNetwork}
+    ProtoNetwork -> ProtoNode
+    Config
 }
 

@@ -10,6 +10,8 @@
 
 using std::vector;
 using std::string;
+using std::ostream;
+using std::endl;
 
 struct Link;
 
@@ -33,7 +35,9 @@ public:
     double get_accumulator() const;
     void reset();
     void link_to(Node* n, double weight);
-    size_t get_id();
+    size_t get_id() const;
+    bool has_outgoing_links() const;
+    friend ostream& operator<<(ostream& os, const Node& n);
     //Node(ACTIVATION_FUNCTION f, double w, double b);
 };
 

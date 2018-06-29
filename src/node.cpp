@@ -46,6 +46,18 @@ void Node::link_to(Node* n, double weight) {
     links.push_back(new_link);
 }
 
-size_t Node::get_id() {
+size_t Node::get_id() const {
     return id;
+}
+
+bool Node::has_outgoing_links() const {
+    return links.size() != 0;
+}
+
+ostream& operator<<(ostream& os, const Node& n) {
+    os << "Node " << n.id << endl;
+    for (const auto& i: n.links) {
+        std::cout << "\t-> " << i.target->get_id() << endl;
+    }
+    return os;
 }

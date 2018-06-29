@@ -9,7 +9,7 @@ Genome::Genome(map<size_t, private_gene_t> genes_) {
     setup_protonet();
 }
 
-Genome::Genome(const vector<gene_ptr>& genes_) {
+Genome::Genome(const set<gene_ptr>& genes_) {
     genes = {};
     for (const auto& g: genes_)
         genes.insert({g->id, private_gene_t(*g, 1.0, true)});
@@ -229,4 +229,8 @@ bool Genome::is_compatible(const Genome& rhs) {
 
 bool Genome::operator<(const Genome& rhs) {
     return (fitness < rhs.fitness) ? true : false;
+}
+
+size_t Genome::get_size() const {
+    return genes.size();
 }

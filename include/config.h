@@ -25,6 +25,7 @@ struct Configuration {
     double node_mutation_chance;
     double weight_max;
     double selectiveness;
+    double delta_t;
 };
 
 class Config {

@@ -12,6 +12,7 @@ void NEAT::train_generation() {
         genome->fitness = play(genome->get_network());
         avg_fitness += genome->fitness;
     }
+    handler.adjust_fitness();
     cout << "Average fitness: " << (avg_fitness / counter);
     handler.reproduce();
 }
