@@ -15,6 +15,7 @@ void NEAT::train_generation() {
     handler.adjust_fitness();
     cout << "Average fitness: " << (avg_fitness / counter);
     handler.reproduce();
+    handler.mutate_genomes();
 }
 
 void NEAT::train(size_t gen_count) {

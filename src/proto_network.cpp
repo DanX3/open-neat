@@ -114,7 +114,7 @@ gene_ptr ProtoNetwork::mutate_valid_link() const {
         if (start->layer > end->layer)
             std::swap(start, end);
 
-        if (start->layer >= end->layer
+        if (start->layer == end->layer
                 or layer_n.count(start->id) != 0)
                 //or layer_n.count(end  ->id) != 0)
             continue;
@@ -129,7 +129,7 @@ gene_ptr ProtoNetwork::mutate_valid_link() const {
         }
         if (already_existing)
             continue;
-        std::cerr << "Adding gene " << start->id << " -> " << end->id << endl;
+        //std::cerr << "Adding gene " << start->id << " -> " << end->id << endl;
         return gene_ptr{new gene_t(0, start->id, end->id)};
 
     }

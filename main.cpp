@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
     }
     OtherXor XOR;
     XOR.train(gen_count);
-    XOR.print_network();
+    //XOR.print_network();
     return 0;
 }
 

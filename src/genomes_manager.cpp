@@ -12,7 +12,7 @@ GenomesHandler::GenomesHandler(size_t input_size, size_t output_size) {
         }
     }
     for (const auto& i: genes_list) {
-        if (NodeIDGen::instance().check_id() < i->id)
+        if (NodeIDGen::instance().check_id() <= i->id)
             NodeIDGen::instance().get_id();
     }
 
@@ -50,7 +50,7 @@ void GenomesHandler::speciate(bool to_populate) {
             genomes.pop();
         }
     }
-    mutate_genomes();
+    //mutate_genomes();
 }
 
 ostream& operator<<(ostream& os, const GenomesHandler& gh) {
@@ -110,8 +110,6 @@ void GenomesHandler::mutate_genome_node(genome_ptr genome) {
     gene_ptr new_registered_gene_to = make_shared<gene_t>(
             IDGenerator::instance().get_id(),
             new_node_id, new_gene->to);
-    std::cerr << "Adding " << *new_registered_gene_from 
-              << " and "   << *new_registered_gene_to << endl;
     genes_list.insert(new_registered_gene_from);
     genes_list.insert(new_registered_gene_to);
     genome->add_node(new_registered_gene_from, new_registered_gene_to);
@@ -125,13 +123,11 @@ void GenomesHandler::mutate_genomes() {
     auto config = Config::instance().get_settings();
     for (auto& species_i: species) {
         for (auto& genome: species_i.get_genomes()) {
-            std::cerr << "Mutating genome..." << endl;
             if (randf() < config.node_mutation_chance)
                 mutate_genome_node(genome);
 
             if (randf() < config.link_mutation_chance)
                 mutate_genome_link(genome);
-            std::cerr << "Mutating link..." << endl;
         }
     }
 }
@@ -209,15 +205,15 @@ genome_ptr GenomesHandler::get_genome(size_t i) const {
 void GenomesHandler::adjust_fitness() {
     genome_ptr src, dest;
     for (size_t i=0; (src = get_genome(i)) != nullptr; i++) {
-        cout << "Genome#" << i
-             << "fitness " << src->fitness;
+        //cout << "Genome#" << i
+             //<< "fitness " << src->fitness;
              //<< " size: " << src->get_size() << endl;
         double denom = 0.0;
         for (size_t j=0; (dest = get_genome(j)) != nullptr; j++) {
             denom += sh(src, dest);
         }
         src->fitness /= denom;
-        cout << "adjusted: " << src->fitness << endl;
+        //cout << "\tadjusted: " << src->fitness << endl;
     }
 }
 
