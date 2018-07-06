@@ -4,6 +4,7 @@
 #include "misc.h"
 #include <map>
 #include <memory>
+#include <algorithm>
 #include "network.h"
 #include "proto_network.h"
 #include "test.h"
@@ -13,6 +14,7 @@ using std::vector;
 using std::shared_ptr;
 using std::make_shared;
 using std::max;
+using std::clamp;
 
 typedef shared_ptr<Network> network_ptr;
 

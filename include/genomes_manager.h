@@ -32,7 +32,7 @@ class GenomesHandler {
         gene_ptr find_gene(gene_ptr gene, vector<gene_ptr>& container) const;
         gene_ptr find_gene(gene_ptr gene, set<gene_ptr>& container) const;
         double sh(genome_ptr i, genome_ptr j);
-        void speciate(bool to_populate = false);
+        void speciate();
     protected:
     public:
         GenomesHandler(size_t input_size, size_t output_size);

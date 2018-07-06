@@ -166,13 +166,15 @@ network_ptr Genome::get_network() const {
 }
 
 void Genome::mutate_weights() {
-    double weight_max = Config::instance().get_settings().weight_max;
+    double w_max = Config::instance().get_settings().weight_max;
     for (auto& gene: genes)
         if (randf() < 0.8) {
             if (randf() < 0.9)
-                gene.second.weight += 2 * randf() - 1.0;
-            else
-                gene.second.weight = randf() * weight_max;
+                gene.second.weight = clamp(gene.second.weight 
+                        + (2.0*randf() - 1.0), -w_max, w_max);
+            else {
+                gene.second.weight = (2.0*randf()-1.0) * w_max;
+            }
         }
 }
 

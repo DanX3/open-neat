@@ -8,7 +8,7 @@ find_package(Threads REQUIRED)
 add_executable(neat ${SOURCES} main.cpp)
 target_link_libraries(neat Threads::Threads)
 set(CMAKE_CXX_COMPILER "/usr/bin/g++")
-set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -g -DTEST=1 -pg -lpthread")
+set(CMAKE_CXX_FLAGS "-std=c++17 -Wall -g -DTEST=1 -pg -lpthread")
 #add_library(gtest STATIC)
 
 enable_testing()

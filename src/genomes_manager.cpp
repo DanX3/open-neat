@@ -23,16 +23,25 @@ GenomesHandler::GenomesHandler(size_t input_size, size_t output_size) {
     auto config = Config::instance().get_settings();
     pop_size = config.population_size;
     delta_t = config.delta_t;
-    speciate(true);
+
+    // Create first genomes and speciate
+    for (size_t i=0; i<pop_size; i++)
+        genomes.push(make_shared<Genome>(genes_list));
+    species = {};
+    speciate();
 }
 
-void GenomesHandler::speciate(bool to_populate) {
+/**
+ * Speciation is the action of separating every genome in its species depending
+ * on its fitness and structure
+ * speciate() takes every genome and assign them in its species
+ */
+void GenomesHandler::speciate() {
+    if (genomes.empty())
+        throw "Error: genomes is not empy";
+
+    genomes.top()->write_to_file("genome.dot");
     species = {};
-    if (to_populate) {
-        for (size_t i=0; i<pop_size; i++) {
-            genomes.push(make_shared<Genome>(genes_list));
-        }
-    }
 
     while (not genomes.empty()) {
         bool inserted = false;
@@ -50,7 +59,6 @@ void GenomesHandler::speciate(bool to_populate) {
             genomes.pop();
         }
     }
-    //mutate_genomes();
 }
 
 ostream& operator<<(ostream& os, const GenomesHandler& gh) {
