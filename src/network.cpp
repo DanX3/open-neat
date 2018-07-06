@@ -63,14 +63,7 @@ vector<double> Network::evaluate_with_actions(vector<double> input) {
         for (auto node: layer)
             node.second.send_input();
 
-    auto output = get_output_nodes();
-    vector<double> actions = {};
-    actions.reserve(output.size());
-    if (actions.capacity() != 2)
-        cout << *this << endl;
-    for (const auto& i: output) {
-        actions.push_back(i->get_accumulator());
-    }
+    auto actions = get_output();
     //for (auto last_node_i: net.at(net.size() - 1))
         //actions.push_back(last_node_i.second.get_accumulator());
     softmax(actions);
@@ -81,9 +74,9 @@ vector<double> Network::evaluate_with_actions(vector<double> input) {
  * Reset all the nodes' accumulator
  */
 void Network::reset() {
-    for (auto layer: net)
-        for (auto node: layer)
-            node.second.reset();
+    for (size_t i=0; i<net.size(); i++)
+        for (auto j=net.at(i).begin(); j!=net.at(i).end(); j++)
+            (*j).second.reset();
 }
 
 /**
@@ -91,7 +84,9 @@ void Network::reset() {
  */
 void Network::softmax(vector<double>& v) {
     std::for_each(v.begin(), v.end(), [](double& d){ d = std::exp(d); });
-    double sum = std::accumulate(v.begin(), v.end(), 0.0);
+    double sum = 0.0;
+    for (const auto& i: v)
+        sum += i;
     std::for_each(v.begin(), v.end(), [sum](double& d){ d /= sum; });
 }
 
@@ -122,11 +117,33 @@ ostream& operator<<(ostream& os, const Network& t) {
     return os;
 }
 
-vector<const Node*> Network::get_output_nodes() {
-    vector<const Node*> output{};
+vector<double> Network::get_output() {
+    vector<double> output{};
     for (int i=net.size()-1; i>=0; i--)
         for (const auto& node: net.at(i))
             if (not node.second.has_outgoing_links())
-                output.push_back(&node.second);
+                output.push_back(node.second.get_accumulator());
     return output;
+}
+
+void Network::write_to_file(const char* filename) const {
+    std::ofstream outfile;
+    outfile.open(filename);
+    outfile << "digraph NN {" << endl;
+    for (const auto& layer: net)
+        for (const auto& pair: layer)
+            outfile << pair.second.get_id() << " [label=\""
+                    << pair.second.get_id() << "("
+                    << std::setprecision(3) << pair.second.get_accumulator() 
+                    << ")\"]" << endl;
+
+    for (const auto& layer: net)
+        for (const auto& pair: layer)
+            for (const auto& link: pair.second.get_links())
+                outfile << '\t' << pair.second.get_id() << " -> " 
+                        << link.target->get_id() << " [label=\""
+                        << std::setprecision(3) << link.weight << "\"]" << endl;
+
+    outfile << "}";
+    outfile.close();
 }

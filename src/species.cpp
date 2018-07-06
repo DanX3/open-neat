@@ -25,7 +25,6 @@ bool operator<(genome_ptr lhs, genome_ptr rhs) {
 
 void Species::select_best_genomes() {
     sort(genomes.begin(), genomes.end());
-    cout << endl;
     size_t target_size = (size_t) (selectiveness * genomes.size());
     target_size = (target_size != 0) ? target_size : 1;
     while (genomes.size() > target_size)

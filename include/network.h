@@ -4,6 +4,10 @@
 #include "node.h"
 #include <map>
 #include <algorithm>
+#include <numeric>
+#include <fstream>
+#include <iomanip>
+#include "misc.h"
 
 using std::vector;
 using std::map;
@@ -11,6 +15,7 @@ using std::cout;
 using std::endl;
 using std::ostream;
 
+class NetworkTest;
 
 class Network {
     private:
@@ -20,7 +25,6 @@ class Network {
 
     protected:
     public:
-        vector<const Node*> get_output_nodes();
         double fitness;
         static void softmax(vector<double> &actions);
         Network(unsigned short layers_count);
@@ -31,8 +35,11 @@ class Network {
                         double weight);
         int evaluate(vector<double> input);
         vector<double> evaluate_with_actions(vector<double> input);
+        vector<double> get_output();
         size_t get_layers_count() const;
         friend ostream& operator<<(ostream& os, const Network& t);
+        void write_to_file(const char* filename) const;
+        friend NetworkTest;
 };
 
  #endif

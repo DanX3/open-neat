@@ -61,3 +61,7 @@ ostream& operator<<(ostream& os, const Node& n) {
     }
     return os;
 }
+
+vector<Link> Node::get_links() const {
+    return links;
+}

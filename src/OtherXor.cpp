@@ -15,6 +15,7 @@ double operator-(vector<double>& rhs, vector<double>& lhs) {
     return fabs(accumulator);
 }
 
+
 double OtherXor::play(network_ptr net) {
     auto v0 = net->evaluate_with_actions({0.0, 0.0});
     auto v1 = net->evaluate_with_actions({0.0, 1.0});
@@ -30,5 +31,12 @@ double OtherXor::play(network_ptr net) {
     fitness -= v1_sol - v1;
     fitness -= v2_sol - v2;
     fitness -= v3_sol - v3;
+    if (std::isnan(fitness))
+        net->write_to_file("nan_network.dot");
+        //std::cout << v0 << '\n';
+        //std::cout << v1 << '\n';
+        //std::cout << v2 << '\n';
+        //std::cout << v3 << '\n';
+    //}
     return fitness;
 }

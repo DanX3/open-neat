@@ -7,6 +7,7 @@
 //#include "network.h"
 #include "genomes_manager.h"
 #include <unistd.h>
+#include <cmath>
 
 using std::shared_ptr;
 using std::make_shared;

@@ -3,12 +3,14 @@
 
 #include <iostream>
 #include <memory>
+#include <vector>
 
 using std::cout;
 using std::ostream;
 using std::endl;
 using std::shared_ptr;
 using std::unique_ptr;
+using std::vector;
 
 
 struct gene_t;
@@ -35,7 +37,7 @@ inline bool operator!=(const gene_t& lhs, const gene_t& rhs) {
 }
 
 inline bool operator<(const gene_t& lhs, const gene_t& rhs) {
-    return rhs.id < rhs.id;
+    return lhs.id < rhs.id;
 }
 
 inline shared_ptr<gene_t> new_gene_t(size_t id, size_t from, size_t to) {
@@ -101,5 +103,12 @@ inline double randf() {
     //os << "<" << pair.first << ", " << pair.second << ">";
     //return os;
 //}
+
+inline ostream& operator<<(ostream& os, const vector<double>& t) {
+    for (const auto& i: t) {
+        os << i << " ";
+    }
+    return os;
+}
 
 #endif

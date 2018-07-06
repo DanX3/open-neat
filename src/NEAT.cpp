@@ -11,9 +11,17 @@ void NEAT::train_generation() {
     while ((genome = handler.get_genome(counter++)) != nullptr) {
         genome->fitness = play(genome->get_network());
         avg_fitness += genome->fitness;
+        if (std::isnan(genome->fitness))  {
+            std::cout << "Fitness is nan:" << genome->fitness 
+                      << " at " << counter << '\n';
+            //genome->get_network()->write_to_file("nan_network.dot");
+            cout << *genome << endl;
+            throw "NaN Fitness";
+        }
+
     }
     handler.adjust_fitness();
-    cout << "Average fitness: " << (avg_fitness / counter);
+    cout << "Average fitness: " << (avg_fitness / counter) << endl;
     handler.reproduce();
     handler.mutate_genomes();
 }

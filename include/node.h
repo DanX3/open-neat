@@ -37,6 +37,7 @@ public:
     void link_to(Node* n, double weight);
     size_t get_id() const;
     bool has_outgoing_links() const;
+    vector<Link> get_links() const;
     friend ostream& operator<<(ostream& os, const Node& n);
     //Node(ACTIVATION_FUNCTION f, double w, double b);
 };
