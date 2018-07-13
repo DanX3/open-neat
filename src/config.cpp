@@ -62,7 +62,7 @@ Configuration Config::associate_values(map<string, double> vals) {
     c.node_mutation_chance = (double)vals.at("node_mutation_chance");
     c.weight_max = (double)vals.at("weight_max");
     c.selectiveness = (double)vals.at("selectiveness");
-    c.selectiveness = (double)vals.at("delta_t");
+    c.delta_t = (double)vals.at("delta_t");
     return c;
 }
 

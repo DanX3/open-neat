@@ -23,12 +23,16 @@ bool operator<(genome_ptr lhs, genome_ptr rhs) {
     return (lhs->fitness > rhs->fitness) ? true : false;
 }
 
-void Species::select_best_genomes() {
+size_t Species::select_best_genomes() {
     sort(genomes.begin(), genomes.end());
     size_t target_size = (size_t) (selectiveness * genomes.size());
     target_size = (target_size != 0) ? target_size : 1;
+    //std::cout << "selectiveness " << selectiveness << '\n';
+    //std::cout << "genomes size/ target_size " << genomes.size() << " " << target_size << '\n';
+    size_t size_before = genomes.size();
     while (genomes.size() > target_size)
         genomes.pop_back();
+    return size_before - genomes.size();
 }
 
 ostream& operator<<(ostream& os, const Species& t) {

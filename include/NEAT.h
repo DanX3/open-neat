@@ -8,25 +8,20 @@
 #include "genomes_manager.h"
 #include <unistd.h>
 #include <cmath>
+#include <fstream>
 
 using std::shared_ptr;
 using std::make_shared;
 using std::thread;
-
-struct Observation;
-struct Informations;
-
-struct StepResult {
-    Observation& obs;
-    double reward;
-    bool done;
-    Informations& info;
-};
+using std::ofstream;
 
 class NEAT {
     private:
+        void log_gen();
     protected:
         //shared_ptr<Observation> obs;
+        size_t gen_count;
+        ofstream log;
         GenomesHandler handler;
         virtual double play(network_ptr net) = 0;
         void train_generation();

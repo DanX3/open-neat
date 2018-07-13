@@ -19,7 +19,6 @@ GenomesHandler::GenomesHandler(size_t input_size, size_t output_size) {
     // genomes list initialization
     mutated_links = {};
     mutated_nodes = {};
-    gen_count = 0;
     auto config = Config::instance().get_settings();
     pop_size = config.population_size;
     delta_t = config.delta_t;
@@ -124,7 +123,6 @@ void GenomesHandler::mutate_genome_node(genome_ptr genome) {
 }
 
 void GenomesHandler::mutate_genomes() {
-    gen_count++;
     mutated_nodes.clear();
     mutated_links.clear();
 
@@ -153,8 +151,9 @@ void GenomesHandler::mutate_genomes() {
 
 void GenomesHandler::reproduce() {
     // Selection
+    size_t removed = 0;
     for (auto& s: species)
-        s.select_best_genomes();
+        removed += s.select_best_genomes();
 
     size_t genomes_left = 0;
     for (const auto& s: species)

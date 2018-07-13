@@ -17,7 +17,7 @@ class Species {
         void add_genome(genome_ptr new_genome);
         vector<genome_ptr> get_genomes() const;
         size_t get_size() const;
-        void select_best_genomes();
+        size_t select_best_genomes();
         friend ostream& operator<<(ostream& os, const Species& t);
 };
 

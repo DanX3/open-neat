@@ -83,7 +83,7 @@ void Network::reset() {
  * Utility to apply a softmax transformation to a vector
  */
 void Network::softmax(vector<double>& v) {
-    std::for_each(v.begin(), v.end(), [](double& d){ d = std::exp(d); });
+    std::for_each(v.begin(), v.end(), [](double& d){ d = std::exp2(d); });
     double sum = 0.0;
     for (const auto& i: v)
         sum += i;
