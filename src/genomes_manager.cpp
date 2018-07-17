@@ -123,6 +123,7 @@ void GenomesHandler::mutate_genome_node(genome_ptr genome) {
 }
 
 void GenomesHandler::mutate_genomes() {
+    gen_count++;
     mutated_nodes.clear();
     mutated_links.clear();
 
@@ -135,6 +136,13 @@ void GenomesHandler::mutate_genomes() {
             if (randf() < config.link_mutation_chance)
                 mutate_genome_link(genome);
         }
+    }
+
+    // TODO: assign the real fitness after testing
+    for (auto& genome: genomes) {
+        genome->get_network()->fitness = (int)(std::pow(-1, rand()%2+1)) 
+            * rand() % gen_count;
+        cout << genome->get_network()->fitness << endl;
     }
 }
 

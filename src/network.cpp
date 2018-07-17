@@ -63,9 +63,16 @@ vector<double> Network::evaluate_with_actions(vector<double> input) {
         for (auto node: layer)
             node.second.send_input();
 
+<<<<<<< HEAD
     auto actions = get_output();
     //for (auto last_node_i: net.at(net.size() - 1))
         //actions.push_back(last_node_i.second.get_accumulator());
+=======
+    vector<double> actions = {};
+    actions.reserve(net.at(net.size() - 1).size());
+    for (auto last_node_i: net.at(net.size() - 1))
+        actions.push_back(last_node_i.second.get_accumulator());
+>>>>>>> be10ee69405a5e4bc59296cbfbea19747cf42bc3
     softmax(actions);
     return actions;
 }

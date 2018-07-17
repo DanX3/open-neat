@@ -13,8 +13,8 @@
 #include <string>
 
 using std::stack;
-
 bool operator==(gene_ptr lhs, gene_ptr rhs);
+typedef shared_ptr<Genome> genome_ptr;
 
 class GenomesHandler {
     private:
