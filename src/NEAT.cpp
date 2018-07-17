@@ -6,7 +6,7 @@ NEAT::NEAT(size_t input_size, size_t output_size) :
         log.open("log.dat");
     }
 
-void NEAT::train_generation() {
+genome_ptr NEAT::train_generation() {
     gen_count++;
     size_t counter = 0;
     double avg_fitness = 0.0;
@@ -23,22 +23,48 @@ void NEAT::train_generation() {
         }
 
     }
+    genome_ptr best = handler.get_best_genome();
     log_gen();
-    handler.adjust_fitness();
-    cout << "Average fitness: " << (avg_fitness / counter) << endl;
-    handler.reproduce();
-    handler.mutate_genomes();
+    cout << "Generation #" << gen_count << endl
+         << "Average : " << (avg_fitness / counter) << endl
+         << "Best    : " << best->fitness << "\n\n";
+    return best;
 }
 
 void NEAT::train(size_t gen_count) {
+    auto settings = Config::instance().get_settings();
     if (gen_count == 0)
-        gen_count = Config::instance().get_settings().max_generations;
-    for (size_t i=0; i<gen_count; i++) {
-        train_generation();
-    }
+        gen_count = settings.max_generations;
+    //for (size_t i=0; i<gen_count; i++) {
+    size_t i = 0;
+    do {
+        auto best = train_generation();
+        if (settings.fitness_threshold_enabled
+                and best->fitness > settings.fitness_threshold ) {
+            log_best(best);
+            if (log.is_open())
+                log.close();
+            return;
+        }
+
+        if (i != gen_count ) {
+            handler.adjust_fitness();
+            handler.reproduce();
+            handler.mutate_genomes();
+        }
+    } while (i++ < gen_count);
+
+    log_best(handler.get_best_genome());
     if (log.is_open())
         log.close();
 }
+
+void NEAT::log_best(genome_ptr best) {
+    best->write_to_file("best.dot");
+    cout << "Training stopped with fitness " << best->fitness << '\n';
+    showcase(best->get_network());
+}
+
 
 void NEAT::print_network() const {
     handler.get_genome(0)->write_to_file("network_0.dot");
@@ -51,3 +77,4 @@ void NEAT::log_gen() {
         log << gen_count << " " << genome->fitness << endl;
     }
 }
+

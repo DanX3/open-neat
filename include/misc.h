@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <iomanip>
 
 using std::cout;
 using std::ostream;
@@ -11,6 +12,7 @@ using std::endl;
 using std::shared_ptr;
 using std::unique_ptr;
 using std::vector;
+using std::setw;
 
 
 struct gene_t;
@@ -106,7 +108,7 @@ inline double randf() {
 
 inline ostream& operator<<(ostream& os, const vector<double>& t) {
     for (const auto& i: t) {
-        os << i << " ";
+        os << setw(12) << i << " ";
     }
     return os;
 }

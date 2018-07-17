@@ -43,6 +43,7 @@ class GenomesHandler {
         void reproduce();
         //network_ptr get_network(size_t i) const;
         genome_ptr get_genome(size_t i) const;
+        genome_ptr get_best_genome() const;
 };
 
  #endif

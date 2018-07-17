@@ -126,9 +126,9 @@ vector<double> Network::get_output() {
     return output;
 }
 
-void Network::write_to_file(const char* filename) const {
+void Network::write_to_file(string filename) const {
     std::ofstream outfile;
-    outfile.open(filename);
+    outfile.open(filename.c_str());
     outfile << "digraph NN {" << endl;
     for (const auto& layer: net)
         for (const auto& pair: layer)

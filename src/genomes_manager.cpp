@@ -228,3 +228,14 @@ bool operator==(gene_ptr lhs, gene_ptr rhs) {
     return lhs->from == rhs->from
        and lhs->to   == rhs->to;
 }
+
+genome_ptr GenomesHandler::get_best_genome() const {
+    genome_ptr best = get_genome(0);
+    genome_ptr g;
+    size_t counter = 1;
+    while ((g = get_genome(counter++)) != nullptr) {
+        if (g->fitness > best->fitness)
+            best = g;
+    }
+    return best;
+}

@@ -4,8 +4,8 @@
 #add_executable(node ${SOURCES} NodeTest.cpp)
 #add_test(NAME NodeTest COMMAND node)
 
-add_executable(network ${SOURCES} NetworkTest.cpp)
-add_test(NAME NetworkTest COMMAND network)
+#add_executable(network ${SOURCES} NetworkTest.cpp)
+#add_test(NAME NetworkTest COMMAND network)
 
 #add_executable(protonetwork ${SOURCES} ProtoNetworkTest.cpp)
 #add_test(NAME ProtoNetworkTest COMMAND protonetwork)
@@ -19,5 +19,5 @@ add_test(NAME NetworkTest COMMAND network)
 #add_executable(species ${SOURCES} SpeciesTest.cpp)
 #add_test(NAME SpeciesTest COMMAND species)
 
-add_executable(xorgame ${SOURCES} XORTest.cpp)
-add_test(NAME XorTest COMMAND xorgame)
+#add_executable(xorgame ${SOURCES} XORTest.cpp)
+#add_test(NAME XorTest COMMAND xorgame)

@@ -38,7 +38,7 @@ class Network {
         vector<double> get_output();
         size_t get_layers_count() const;
         friend ostream& operator<<(ostream& os, const Network& t);
-        void write_to_file(const char* filename) const;
+        void write_to_file(string filename) const;
         friend NetworkTest;
 };
 
